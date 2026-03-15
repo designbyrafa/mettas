@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Santuário de Metas</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            --ios-bg: #f2f2f7;
+            --ios-card: #ffffff;
+            --ios-blue: #007aff;
+            --ios-red: #ff3b30;
+            --ios-orange: #ff9500;
+            --ios-yellow: #ffcc00;
+            --ios-green: #34c759;
+            --ios-purple: #af52de;
+            --ios-gray: #8e8e93;
+            --ios-separator: rgba(60, 60, 67, 0.08);
+            --text-main: #1c1c1e;
+            --text-muted: #8e8e93;
+            --shadow-soft: 0 8px 24px rgba(0,0,0,0.04);
+            --modal-overlay: rgba(0, 0, 0, 0.3);
+        }
+
+        [data-theme="dark"] {
+            --ios-bg: #000000;
+            --ios-card: #1c1c1e;
+            --ios-blue: #0a84ff;
+            --ios-red: #ff453a;
+            --ios-orange: #ff9f0a;
+            --ios-yellow: #ffd60a;
+            --ios-green: #32d74b;
+            --ios-purple: #bf5af2;
+            --ios-gray: #98989d;
+            --ios-separator: rgba(255, 255, 255, 0.1);
+            --text-main: #f5f5f7;
+            --text-muted: #ebebf599;
+            --shadow-soft: 0 8px 24px rgba(0,0,0,0.4);
+            --modal-overlay: rgba(0, 0, 0, 0.6);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--ios-bg); color: var(--text-main); min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; padding: 30px 20px; transition: background-color 0.3s; }
+        .app-container { width: 100%; max-width: 500px; z-index: 10; }
+
+        /* Login */
+        #login-screen { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 70vh; }
+        #login-screen input { width: 100%; max-width: 300px; padding: 18px; border-radius: 16px; border: none; background-color: var(--ios-card); font-size: 1.5rem; color: var(--text-main); outline: none; text-align: center; letter-spacing: 4px; box-shadow: var(--shadow-soft); }
+
+        /* App */
+        #app-screen { display: none; opacity: 0; transform: translateY(10px); transition: all 0.4s ease; }
+        #app-screen.visible { display: block; opacity: 1; transform: translateY(0); }
+
+        .header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; }
+        .header h2 { font-size: 2.2rem; font-weight: 800; letter-spacing: -1px; }
+        .header-actions { display: flex; gap: 12px; }
+        
+        .ios-group { background: var(--ios-card); border-radius: 16px; margin-bottom: 20px; overflow: hidden; box-shadow: var(--shadow-soft); }
+        .icon-btn { background: var(--ios-card); border: none; color: var(--ios-blue); font-size: 1.3rem; width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+
+        /* Dashboard */
+        .dashboard { padding: 16px 20px; }
+        .dash-header { display: flex; justify-content: space-between; margin-bottom: 12px; font-weight: 600; font-size: 0.9rem; }
+        .chart-wrap { height: 100px; }
+
+        /* Calendar */
+        .cal-wrap { max-height: 0; opacity: 0; overflow: hidden; transition: 0.4s; }
+        .cal-wrap.open { max-height: 400px; opacity: 1; margin-bottom: 20px; }
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); padding: 10px; gap: 4px; text-align: center; }
+        .day-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 0.9rem; cursor: pointer; }
+        .day-perfect { background: rgba(52, 199, 89, 0.2); color: var(--ios-green); font-weight: 700; }
+        .day-yellow { background: rgba(255, 204, 0, 0.2); color: #b08d00; font-weight: 700; }
+        .day-red { background: rgba(255, 59, 48, 0.2); color: var(--ios-red); font-weight: 700; }
+        .day-today { background: var(--ios-blue); color: white; font-weight: 700; }
+
+        /* List */
+        ul { list-style: none; background: var(--ios-card); border-radius: 16px; box-shadow: var(--shadow-soft); margin-bottom: 100px; }
+        li { padding: 16px 20px; border-bottom: 1px solid var(--ios-separator); display: flex; align-items: flex-start; gap: 14px; transition: 0.3s; }
+        li.done { opacity: 0.6; }
+        li.done .txt { text-decoration: line-through; }
+        .check { width: 26px; height: 26px; border: 2px solid var(--ios-separator); border-radius: 50%; flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .badge { background: var(--ios-separator); padding: 4px 10px; border-radius: 10px; font-size: 0.75rem; font-weight: 600; margin-top: 4px; display: inline-block; color: var(--text-muted); }
+
+        /* Floating Button */
+        .add-btn { position: fixed; bottom: 30px; right: 24px; width: 60px; height: 60px; border-radius: 50%; background: var(--ios-blue); color: white; display: flex; align-items: center; justify-content: center; font-size: 2rem; border: none; box-shadow: 0 8px 24px rgba(0, 122, 255, 0.4); cursor: pointer; z-index: 50; }
+
+        /* Modal */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-overlay); backdrop-filter: blur(5px); display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; z-index: 100; }
+        .modal.open { opacity: 1; pointer-events: auto; }
+        .m-content { background: var(--ios-bg); width: 100%; max-width: 500px; border-radius: 24px 24px 0 0; padding: 20px 24px; transform: translateY(100%); transition: 0.4s; max-height: 90vh; overflow-y: auto; }
+        .modal.open .m-content { transform: translateY(0); }
+        .f-group { background: var(--ios-card); border-radius: 16px; margin-bottom: 16px; overflow: hidden; }
+        .f-row { padding: 14px 16px; border-bottom: 1px solid var(--ios-separator); display: flex; justify-content: space-between; align-items: center; }
+        .f-row input, .f-row select, .f-row textarea { border: none; outline: none; background: transparent; color: var(--text-main); font-size: 1rem; width: 100%; }
+
+        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 200; background: rgba(30,30,30,0.9); color: white; padding: 12px 24px; border-radius: 20px; opacity: 0; transition: 0.4s; pointer-events: none; }
+        .show-t { opacity: 1 !important; transform: translateX(-50%) translateY(10px) !important; }
+
+        @keyframes bounce { 50% { transform: scale(1.2); } }
+        .bounce { animation: bounce 0.3s; }
+        @keyframes shake { 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+        .shake { animation: shake 0.3s; border: 1px solid var(--ios-red) !important; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container" id="login-screen">
+        <input type="password" id="pass" placeholder="••••••••">
+    </div>
+
+    <div class="app-container" id="app-screen">
+        <div class="header">
+            <div>
+                <h2>Metas <i class="ph-fill ph-cloud-check" style="font-size: 1rem; color: var(--ios-blue)"></i></h2>
+                <p id="sub-msg">A sincronizar...</p>
+            </div>
+            <div class="header-actions">
+                <button class="icon-btn" onclick="window.toggleCal()"><i class="ph ph-calendar-blank"></i></button>
+                <button class="icon-btn" onclick="window.openSets()"><i class="ph ph-gear"></i></button>
+                <button class="icon-btn" onclick="location.reload()"><i class="ph ph-lock-key"></i></button>
+            </div>
+        </div>
+
+        <div class="ios-group dashboard">
+            <div class="dash-header">
+                <span>Trabalho vs Pessoal</span>
+                <span id="dash-count">0</span>
+            </div>
+            <div class="chart-wrap"><canvas id="hChart"></canvas></div>
+        </div>
+
+        <div class="ios-group cal-wrap" id="cal-container">
+            <div class="cal-grid" id="cal-grid"></div>
+        </div>
+
+        <ul id="list"></ul>
+        <button class="add-btn" onclick="window.openModal()"><i class="ph ph-plus"></i></button>
+    </div>
+
+    <div class="modal" id="modal">
+        <div class="m-content">
+            <div class="header" style="margin-bottom:15px">
+                <button class="icon-btn" onclick="window.closeModal()" style="background:none; box-shadow:none">Sair</button>
+                <h3 id="m-title">Nova Meta</h3>
+                <button class="icon-btn" onclick="window.saveMeta()" style="background:none; box-shadow:none; font-weight:700">Gravar</button>
+            </div>
+            <div class="f-group">
+                <div class="f-row"><input type="text" id="inp-t" placeholder="Título"></div>
+                <div class="f-row"><textarea id="inp-d" placeholder="Notas" style="height:60px"></textarea></div>
+            </div>
+            <div class="f-group">
+                <div class="f-row"><span>Data</span><input type="date" id="inp-date" style="text-align:right"></div>
+                <div class="f-row"><span>Categoria</span><input type="text" id="inp-c" placeholder="Trabalho, Pessoal..." style="text-align:right"></div>
+                <div class="f-row">
+                    <span>Repetir</span>
+                    <select id="inp-r" style="text-align:right">
+                        <option value="none">Nunca</option>
+                        <option value="daily">Diário</option>
+                        <option value="monthly">Mensal</option>
+                    </select>
+                </div>
+            </div>
+            <button id="btn-del" onclick="window.delMeta()" style="width:100%; padding:15px; color:var(--ios-red); border:none; background:var(--ios-card); border-radius:12px; font-weight:600; display:none">Eliminar Meta</button>
+        </div>
+    </div>
+
+    <div class="modal" id="sets-modal">
+        <div class="m-content">
+            <div class="header"><h3>Ajustes</h3><button onclick="window.closeSets()" class="icon-btn">X</button></div>
+            <button onclick="window.toggleTheme()" style="width:100%; padding:15px; margin-bottom:10px; border-radius:12px; border:none; background:var(--ios-card); color:var(--ios-blue); font-weight:600">Alternar Modo Escuro</button>
+            <p style="text-align:center; font-size:0.8rem; color:var(--text-muted)">Os teus dados estão protegidos no Firebase Cloud.</p>
+        </div>
+    </div>
+
+    <div id="toast"></div>
+
+     <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+        // As tuas credenciais reais do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBOwCPY4pqZTdwE2FonTF_k7mKRod1KIes",
+            authDomain: "metas-214f0.firebaseapp.com",
+            projectId: "metas-214f0",
+            storageBucket: "metas-214f0.firebasestorage.app",
+            messagingSenderId: "613319723293",
+            appId: "1:613319723293:web:209685c654aa21b644f9f4"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = "santuario-v1";
+        
+        const PASS = "rafa2026";
+        let metas = [];
+        let user = null;
+        let editId = null;
+        let chart = null;
+
+        // Login Anónimo Firebase
+        const init = async () => {
+            try {
+                await signInAnonymously(auth);
+                onAuthStateChanged(auth, (u) => {
+                    user = u;
+                    if(u && document.getElementById('app-screen').classList.contains('visible')) {
+                        sync();
+                    }
+                });
+            } catch (error) {
+                console.error("Erro na autenticação. Verifica se ativaste o Login Anónimo no Firebase!", error);
+                document.getElementById('sub-msg').innerText = "Erro ao ligar à nuvem";
+            }
+        };
+        init();
+
+        // Sincronização Firestore
+        function sync() {
+            if(!user) return;
+            const ref = collection(db, 'artifacts', appId, 'users', user.uid, 'metas');
+            onSnapshot(ref, (snap) => {
+                metas = [];
+                snap.forEach(d => metas.push(d.data()));
+                render();
+                document.getElementById('sub-msg').innerText = "Dados em tempo real";
+            }, (error) => {
+                console.error("Erro de permissão no Firestore:", error);
+                document.getElementById('sub-msg').innerText = "Sem permissão (Verifica Regras)";
+            });
+        }
+
+        // Validação da Palavra-Passe
+        document.getElementById('pass').addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') {
+                if(e.target.value === PASS) {
+                    document.getElementById('login-screen').style.display = 'none';
+                    document.getElementById('app-screen').classList.add('visible');
+                    if(user) sync(); 
+                } else {
+                    e.target.classList.add('shake');
+                    setTimeout(() => e.target.classList.remove('shake'), 300);
+                    e.target.value = '';
+                }
+            }
+        });
+
+        // Render UI
+        function render() {
+            const list = document.getElementById('list');
+            list.innerHTML = metas.length ? '' : '<div style="padding:40px; text-align:center; color:var(--ios-gray)">Sem metas na nuvem.</div>';
+            
+            metas.sort((a,b) => a.done - b.done).forEach(m => {
+                const li = document.createElement('li');
+                if(m.done) li.classList.add('done');
+                li.innerHTML = `
+                    <div class="check ${m.done?'bounce':''}" onclick="window.toggle(${m.id}, event)" style="${m.done?'background:var(--ios-blue); border-color:var(--ios-blue)':''}">
+                        ${m.done?'<i class="ph ph-check" style="color:white"></i>':''}
+                    </div>
+                    <div style="flex:1" onclick="window.openModal(${m.id})">
+                        <div class="txt" style="font-weight:600">${m.title}</div>
+                        <div class="badge">${m.date || 'Sem data'} ${m.cat ? ' • '+m.cat : ''}</div>
+                    </div>
+                `;
+                list.appendChild(li);
+            });
+            drawDash();
+            drawCal();
+        }
+
+        async function toggle(id, e) {
+            e.stopPropagation();
+            const m = metas.find(x => x.id === id);
+            if(!m) return;
+            m.done = !m.done;
+            if(m.done && m.rep !== 'none') {
+                let d = m.date ? new Date(m.date) : new Date();
+                if(m.rep === 'daily') d.setDate(d.getDate()+1);
+                else d.setMonth(d.getMonth()+1);
+                m.date = d.toISOString().split('T')[0];
+                m.done = false;
+                toast("Reagendado!");
+            }
+            try {
+                await setDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'metas', id.toString()), m);
+            } catch(e) { toast("Erro ao atualizar."); console.error(e); }
+        }
+
+        function drawDash() {
+    const canvas = document.getElementById('hChart');
+    if (!canvas) return; // Se o canvas não existir, não faz nada e evita o erro
+    
+    const ctx = canvas.getContext('2d');
+    let w = 0, p = 0;
+    metas.filter(x => x.done).forEach(x => {
+        const c = (x.cat||'').toLowerCase();
+        if(c.includes('trab') || c.includes('prof')) w++;
+        else if(c.includes('pess') || c.includes('vida')) p++;
+    });
+    
+    document.getElementById('dash-count').innerText = (w+p) + " Totais";
+    if(chart) chart.destroy();
+    chart = new Chart(ctx, {
+        type: 'bar',
+        data: { labels: ['Trabalho', 'Pessoal'], datasets: [{ data: [w, p], backgroundColor: ['#007aff', '#34c759'], borderRadius: 6 }] },
+        options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { grid: { display: false }, ticks: { color: '#8e8e93' } } } }
+    });
+}
+
+        function drawCal() {
+            const grid = document.getElementById('cal-grid');
+            grid.innerHTML = '';
+            const now = new Date();
+            const days = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
+            for(let i=1; i<=days; i++) {
+                const div = document.createElement('div');
+                div.className = 'day-cell';
+                div.innerText = i;
+                const dStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+                const match = metas.filter(x => x.date === dStr);
+                if(i === now.getDate()) div.classList.add('day-today');
+                if(match.length) {
+                    const done = match.filter(x => x.done).length;
+                    if(done === 0) div.classList.add('day-red');
+                    else if(done < match.length) div.classList.add('day-yellow');
+                    else div.classList.add('day-perfect');
+                }
+                grid.appendChild(div);
+            }
+        }
+
+        window.openModal = (id = null) => {
+            editId = id;
+            const m = metas.find(x => x.id === id);
+            document.getElementById('m-title').innerText = id ? 'Editar' : 'Nova Meta';
+            document.getElementById('inp-t').value = id ? m.title : '';
+            document.getElementById('inp-d').value = id ? m.desc : '';
+            document.getElementById('inp-date').value = id ? m.date : '';
+            document.getElementById('inp-c').value = id ? m.cat : '';
+            document.getElementById('inp-r').value = id ? m.rep : 'none';
+            document.getElementById('btn-del').style.display = id ? 'block' : 'none';
+            document.getElementById('modal').classList.add('open');
+        };
+        window.closeModal = () => document.getElementById('modal').classList.remove('open');
+        
+        window.saveMeta = async () => {
+            const t = document.getElementById('inp-t').value;
+            if(!t) return;
+            const data = {
+                id: editId || Date.now(),
+                title: t,
+                desc: document.getElementById('inp-d').value,
+                date: document.getElementById('inp-date').value,
+                cat: document.getElementById('inp-c').value,
+                rep: document.getElementById('inp-r').value,
+                done: editId ? metas.find(x => x.id === editId).done : false
+            };
+            try {
+                await setDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'metas', data.id.toString()), data);
+                window.closeModal();
+                toast("Nuvem atualizada!");
+            } catch (e) { toast("Erro ao gravar. Verifica regras."); console.error(e); }
+        };
+
+        window.delMeta = async () => {
+            if(editId) {
+                try {
+                    await deleteDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'metas', editId.toString()));
+                    window.closeModal();
+                } catch(e) { console.error(e); }
+            }
+        };
+
+        window.toggleCal = () => document.getElementById('cal-container').classList.toggle('open');
+        window.openSets = () => document.getElementById('sets-modal').classList.add('open');
+        window.closeSets = () => document.getElementById('sets-modal').classList.remove('open');
+        window.toggleTheme = () => {
+            const d = document.documentElement;
+            d.getAttribute('data-theme') === 'dark' ? d.removeAttribute('data-theme') : d.setAttribute('data-theme', 'dark');
+        };
+        window.toggle = toggle;
+
+        function toast(t) {
+            const el = document.getElementById('toast');
+            el.innerText = t; el.classList.add('show-t');
+            setTimeout(() => el.classList.remove('show-t'), 2000);
+        }
+    </script>
+
+</body>
+</html>
+
