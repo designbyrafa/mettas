@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Santuário de Metas</title>
+    
+    <!-- Link para o Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
@@ -295,25 +299,25 @@
         }
 
         function drawDash() {
-    const canvas = document.getElementById('hChart');
-    if (!canvas) return; // Se o canvas não existir, não faz nada e evita o erro
-    
-    const ctx = canvas.getContext('2d');
-    let w = 0, p = 0;
-    metas.filter(x => x.done).forEach(x => {
-        const c = (x.cat||'').toLowerCase();
-        if(c.includes('trab') || c.includes('prof')) w++;
-        else if(c.includes('pess') || c.includes('vida')) p++;
-    });
-    
-    document.getElementById('dash-count').innerText = (w+p) + " Totais";
-    if(chart) chart.destroy();
-    chart = new Chart(ctx, {
-        type: 'bar',
-        data: { labels: ['Trabalho', 'Pessoal'], datasets: [{ data: [w, p], backgroundColor: ['#007aff', '#34c759'], borderRadius: 6 }] },
-        options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { grid: { display: false }, ticks: { color: '#8e8e93' } } } }
-    });
-}
+            const canvas = document.getElementById('hChart');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            let w = 0, p = 0;
+            metas.filter(x => x.done).forEach(x => {
+                const c = (x.cat||'').toLowerCase();
+                if(c.includes('trab') || c.includes('prof')) w++;
+                else if(c.includes('pess') || c.includes('vida')) p++;
+            });
+            
+            document.getElementById('dash-count').innerText = (w+p) + " Totais";
+            if(chart) chart.destroy();
+            chart = new Chart(ctx, {
+                type: 'bar',
+                data: { labels: ['Trabalho', 'Pessoal'], datasets: [{ data: [w, p], backgroundColor: ['#007aff', '#34c759'], borderRadius: 6 }] },
+                options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { grid: { display: false }, ticks: { color: '#8e8e93' } } } }
+            });
+        }
 
         function drawCal() {
             const grid = document.getElementById('cal-grid');
@@ -393,8 +397,16 @@
             el.innerText = t; el.classList.add('show-t');
             setTimeout(() => el.classList.remove('show-t'), 2000);
         }
+
+        // --- REGISTO DO SERVICE WORKER (PWA) ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker registado com sucesso!', reg.scope))
+                    .catch(err => console.error('Erro ao registar o Service Worker:', err));
+            });
+        }
     </script>
 
 </body>
 </html>
-
