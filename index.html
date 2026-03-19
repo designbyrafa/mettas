@@ -4,19 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Santuário de Metas</title>
-    
-    <!-- Link para o Manifest -->
-    <link rel="manifest" href="manifest.json">
-    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.json">
     
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
         :root {
-            --ios-bg: #f2f2f7;
+            --ios-bg: #f5f5f9;
             --ios-card: #ffffff;
             --ios-blue: #007aff;
             --ios-red: #ff3b30;
@@ -28,8 +25,9 @@
             --ios-separator: rgba(60, 60, 67, 0.08);
             --text-main: #1c1c1e;
             --text-muted: #8e8e93;
-            --shadow-soft: 0 8px 24px rgba(0,0,0,0.04);
-            --modal-overlay: rgba(0, 0, 0, 0.3);
+            --shadow-soft: 0 10px 30px rgba(0,0,0,0.04);
+            --shadow-hover: 0 16px 40px rgba(0,0,0,0.08);
+            --modal-overlay: rgba(0, 0, 0, 0.35);
         }
 
         [data-theme="dark"] {
@@ -42,154 +40,301 @@
             --ios-green: #32d74b;
             --ios-purple: #bf5af2;
             --ios-gray: #98989d;
-            --ios-separator: rgba(255, 255, 255, 0.1);
+            --ios-separator: rgba(255, 255, 255, 0.12);
             --text-main: #f5f5f7;
             --text-muted: #ebebf599;
-            --shadow-soft: 0 8px 24px rgba(0,0,0,0.4);
-            --modal-overlay: rgba(0, 0, 0, 0.6);
+            --shadow-soft: 0 10px 30px rgba(0,0,0,0.5);
+            --shadow-hover: 0 16px 40px rgba(0,0,0,0.7);
+            --modal-overlay: rgba(0, 0, 0, 0.7);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--ios-bg); color: var(--text-main); min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; padding: 30px 20px; transition: background-color 0.3s; }
-        .app-container { width: 100%; max-width: 500px; z-index: 10; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--ios-bg); color: var(--text-main); min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; transition: background-color 0.4s ease; overflow-x: hidden; }
+        .app-container { width: 100%; max-width: 500px; z-index: 10; padding: 0 20px; }
 
-        /* Login */
-        #login-screen { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 70vh; }
-        #login-screen input { width: 100%; max-width: 300px; padding: 18px; border-radius: 16px; border: none; background-color: var(--ios-card); font-size: 1.5rem; color: var(--text-main); outline: none; text-align: center; letter-spacing: 4px; box-shadow: var(--shadow-soft); }
+        /* --- LOGIN SCREEN --- */
+        #login-screen { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; position: fixed; top:0; left:0; width: 100%; background: var(--ios-bg); z-index: 200; transition: opacity 0.5s ease, transform 0.5s ease; }
+        #login-screen input { width: 90%; max-width: 320px; padding: 22px; border-radius: 20px; border: 2px solid transparent; background-color: var(--ios-card); font-size: 1.8rem; color: var(--text-main); outline: none; text-align: center; letter-spacing: 8px; box-shadow: var(--shadow-soft); transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); }
+        #login-screen input:focus { transform: translateY(-4px); box-shadow: var(--shadow-hover); border-color: rgba(0, 122, 255, 0.3); }
 
-        /* App */
-        #app-screen { display: none; opacity: 0; transform: translateY(10px); transition: all 0.4s ease; }
+        /* --- APP SCREEN --- */
+        #app-screen { display: none; opacity: 0; transform: translateY(15px); transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); padding-top: 110px; padding-bottom: 120px; }
         #app-screen.visible { display: block; opacity: 1; transform: translateY(0); }
 
-        .header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; }
-        .header h2 { font-size: 2.2rem; font-weight: 800; letter-spacing: -1px; }
+        /* TOP BAR (Glassmorphism) */
+        .top-bar-wrapper { position: fixed; top: 0; left: 0; width: 100%; display: flex; justify-content: center; z-index: 40; background: rgba(245, 245, 249, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 25px 20px 15px 20px; border-bottom: 1px solid var(--ios-separator); transition: background 0.4s; }
+        [data-theme="dark"] .top-bar-wrapper { background: rgba(0, 0, 0, 0.85); }
+        .header { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 460px; }
+        .header h2 { font-size: 2rem; font-weight: 800; letter-spacing: -0.8px; display: flex; align-items: center; gap: 8px; margin: 0; }
+        .header p { color: var(--text-muted); font-size: 0.9rem; font-weight: 600; margin-top: 2px; }
         .header-actions { display: flex; gap: 12px; }
         
-        .ios-group { background: var(--ios-card); border-radius: 16px; margin-bottom: 20px; overflow: hidden; box-shadow: var(--shadow-soft); }
-        .icon-btn { background: var(--ios-card); border: none; color: var(--ios-blue); font-size: 1.3rem; width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .ios-group { background: var(--ios-card); border-radius: 24px; margin-bottom: 24px; overflow: hidden; box-shadow: var(--shadow-soft); transition: background-color 0.4s ease; }
+        .icon-btn { background: var(--ios-card); border: 1px solid var(--ios-separator); color: var(--ios-blue); font-size: 1.3rem; width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.04); transition: all 0.2s cubic-bezier(0.25, 1.5, 0.5, 1); }
+        .icon-btn:active { transform: scale(0.85); background: var(--ios-separator); }
 
-        /* Dashboard */
-        .dashboard { padding: 16px 20px; }
-        .dash-header { display: flex; justify-content: space-between; margin-bottom: 12px; font-weight: 600; font-size: 0.9rem; }
-        .chart-wrap { height: 100px; }
+        /* --- DASHBOARD --- */
+        .dashboard { padding: 24px 20px; }
+        .dash-header { display: flex; justify-content: space-between; margin-bottom: 16px; font-weight: 700; font-size: 1.05rem; color: var(--text-main); }
+        .chart-wrap { height: 110px; }
 
-        /* Calendar */
-        .cal-wrap { max-height: 0; opacity: 0; overflow: hidden; transition: 0.4s; }
-        .cal-wrap.open { max-height: 400px; opacity: 1; margin-bottom: 20px; }
-        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); padding: 10px; gap: 4px; text-align: center; }
-        .day-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 0.9rem; cursor: pointer; }
-        .day-perfect { background: rgba(52, 199, 89, 0.2); color: var(--ios-green); font-weight: 700; }
-        .day-yellow { background: rgba(255, 204, 0, 0.2); color: #b08d00; font-weight: 700; }
-        .day-red { background: rgba(255, 59, 48, 0.2); color: var(--ios-red); font-weight: 700; }
-        .day-today { background: var(--ios-blue); color: white; font-weight: 700; }
+        /* --- CALENDAR --- */
+        .cal-wrap { max-height: 0; opacity: 0; overflow: hidden; transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1); margin-bottom: 0; border-radius: 24px; }
+        .cal-wrap.open { max-height: 500px; opacity: 1; margin-bottom: 24px; box-shadow: var(--shadow-soft); background: var(--ios-card); }
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); padding: 10px 16px 20px; gap: 6px; text-align: center; }
+        .day-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 0.95rem; cursor: pointer; transition: all 0.2s cubic-bezier(0.25, 1.5, 0.5, 1); }
+        .day-cell:active { transform: scale(0.8); }
+        .day-perfect { background: rgba(52, 199, 89, 0.15); color: var(--ios-green); font-weight: 700; }
+        .day-yellow { background: rgba(255, 204, 0, 0.15); color: #d9a000; font-weight: 700; }
+        .day-red { background: rgba(255, 59, 48, 0.15); color: var(--ios-red); font-weight: 700; }
+        .day-today { background: var(--ios-blue); color: white; font-weight: 800; box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3); }
+        .day-selected { box-shadow: 0 0 0 3px var(--ios-card), 0 0 0 5px var(--text-main) !important; z-index: 2; transform: scale(1.1); font-weight: bold; }
 
-        /* List */
-        ul { list-style: none; background: var(--ios-card); border-radius: 16px; box-shadow: var(--shadow-soft); margin-bottom: 100px; }
-        li { padding: 16px 20px; border-bottom: 1px solid var(--ios-separator); display: flex; align-items: flex-start; gap: 14px; transition: 0.3s; }
-        li.done { opacity: 0.6; }
-        li.done .txt { text-decoration: line-through; }
-        .check { width: 26px; height: 26px; border: 2px solid var(--ios-separator); border-radius: 50%; flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .badge { background: var(--ios-separator); padding: 4px 10px; border-radius: 10px; font-size: 0.75rem; font-weight: 600; margin-top: 4px; display: inline-block; color: var(--text-muted); }
+        .filter-indicator { display: none; padding: 16px 20px; background: var(--ios-card); border-radius: 20px; margin-bottom: 24px; font-size: 0.95rem; font-weight: 600; color: var(--ios-blue); box-shadow: var(--shadow-soft); justify-content: space-between; align-items: center; animation: slideDown 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); border: 1px solid var(--ios-blue); }
+        .filter-indicator.show { display: flex; }
 
-        /* Floating Button */
-        .add-btn { position: fixed; bottom: 30px; right: 24px; width: 60px; height: 60px; border-radius: 50%; background: var(--ios-blue); color: white; display: flex; align-items: center; justify-content: center; font-size: 2rem; border: none; box-shadow: 0 8px 24px rgba(0, 122, 255, 0.4); cursor: pointer; z-index: 50; }
+        /* --- LIST & CARDS --- */
+        ul { list-style: none; display: flex; flex-direction: column; gap: 16px; }
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); background: transparent; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+        .empty-state i { font-size: 4.5rem; color: var(--ios-separator); }
+        
+        li { padding: 20px; display: flex; align-items: flex-start; gap: 16px; background: var(--ios-card); border-radius: 24px; box-shadow: var(--shadow-soft); overflow: hidden; position: relative; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.3s ease; opacity: 0; transform: translateY(20px); animation: staggerIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; border: 1px solid transparent; }
+        li:active { transform: scale(0.96); box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+        li.done { opacity: 0.55; background: var(--ios-bg); box-shadow: none; border-color: var(--ios-separator); }
+        li.done .txt { text-decoration: line-through; color: var(--text-muted) !important; }
+        
+        .color-strip { position: absolute; left: 0; top: 0; bottom: 0; width: 6px; transition: background 0.3s; }
+        .check { width: 30px; height: 30px; border: 2px solid var(--ios-separator); border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.3s cubic-bezier(0.25, 1.5, 0.5, 1); background: var(--ios-card); z-index: 2; }
+        .badge { padding: 6px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 700; margin-top: 10px; display: inline-flex; align-items: center; gap: 6px; transition: all 0.3s; }
 
-        /* Modal */
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-overlay); backdrop-filter: blur(5px); display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; z-index: 100; }
+        /* --- FLOATING BUTTON --- */
+        .add-btn { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); width: 68px; height: 68px; border-radius: 50%; background: linear-gradient(135deg, #34aadc, var(--ios-blue)); color: white; display: flex; align-items: center; justify-content: center; font-size: 2.4rem; border: none; box-shadow: 0 10px 30px rgba(0, 122, 255, 0.4); cursor: pointer; z-index: 50; transition: all 0.3s cubic-bezier(0.25, 1.5, 0.5, 1); animation: pulse 3s infinite; }
+        .add-btn:active { transform: translateX(-50%) scale(0.85); box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3); animation: none; }
+
+        /* --- MODALS --- */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-overlay); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; z-index: 100; }
         .modal.open { opacity: 1; pointer-events: auto; }
-        .m-content { background: var(--ios-bg); width: 100%; max-width: 500px; border-radius: 24px 24px 0 0; padding: 20px 24px; transform: translateY(100%); transition: 0.4s; max-height: 90vh; overflow-y: auto; }
+        .m-content { background: var(--ios-bg); width: 100%; max-width: 500px; border-radius: 32px 32px 0 0; padding: 24px; transform: translateY(100%); transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); max-height: 92vh; overflow-y: auto; box-shadow: 0 -10px 50px rgba(0,0,0,0.15); }
         .modal.open .m-content { transform: translateY(0); }
-        .f-group { background: var(--ios-card); border-radius: 16px; margin-bottom: 16px; overflow: hidden; }
-        .f-row { padding: 14px 16px; border-bottom: 1px solid var(--ios-separator); display: flex; justify-content: space-between; align-items: center; }
-        .f-row input, .f-row select, .f-row textarea { border: none; outline: none; background: transparent; color: var(--text-main); font-size: 1rem; width: 100%; }
+        .modal-drag-handle { width: 48px; height: 6px; background: var(--ios-separator); border-radius: 3px; margin: 0 auto 24px auto; }
+        
+        .f-group { background: var(--ios-card); border-radius: 20px; margin-bottom: 20px; overflow: hidden; padding: 0 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.02); border: 1px solid var(--ios-separator); }
+        .f-row { padding: 18px 0; border-bottom: 1px solid var(--ios-separator); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+        .f-row:last-child { border-bottom: none; }
+        .f-row input, .f-row select, .f-row textarea { border: none; outline: none; background: transparent; color: var(--text-main); font-size: 1.05rem; width: 100%; font-weight: 600; }
+        .f-row input::placeholder, .f-row textarea::placeholder { color: var(--text-muted); font-weight: 500; }
 
-        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 200; background: rgba(30,30,30,0.9); color: white; padding: 12px 24px; border-radius: 20px; opacity: 0; transition: 0.4s; pointer-events: none; }
-        .show-t { opacity: 1 !important; transform: translateX(-50%) translateY(10px) !important; }
+        select.native-select { appearance: none; -webkit-appearance: none; border: none; background: transparent; font-size: 1.05rem; color: var(--ios-blue); font-weight: 700; outline: none; cursor: pointer; direction: rtl; }
+        select.native-select option { direction: ltr; color: var(--text-main); }
 
-        @keyframes bounce { 50% { transform: scale(1.2); } }
-        .bounce { animation: bounce 0.3s; }
-        @keyframes shake { 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
-        .shake { animation: shake 0.3s; border: 1px solid var(--ios-red) !important; }
+        .week-wrap { display: none; justify-content: space-between; padding: 16px 0 6px; border-top: 1px solid var(--ios-separator); width: 100%; }
+        .week-day { width: 40px; height: 40px; border-radius: 50%; background: var(--ios-bg); color: var(--text-muted); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.2s cubic-bezier(0.25, 1.5, 0.5, 1); border: 1px solid var(--ios-separator); }
+        .week-day.active { background: var(--ios-blue); color: white; transform: scale(1.1); border-color: var(--ios-blue); box-shadow: 0 4px 10px rgba(0,122,255,0.3); }
+
+        .color-palette { display: flex; gap: 12px; padding: 12px 0; justify-content: space-between; width: 100%; }
+        .color-swatch { width: 38px; height: 38px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: all 0.2s cubic-bezier(0.25, 1.5, 0.5, 1); }
+        .color-swatch.active { transform: scale(1.15); box-shadow: inset 0 0 0 3px var(--ios-card); border-color: var(--text-main); }
+
+        /* TOASTS */
+        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-20px) scale(0.95); z-index: 200; background: rgba(30,30,30,0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); color: white; padding: 16px 24px; border-radius: 24px; font-weight: 600; font-size: 0.95rem; display: flex; align-items: center; gap: 12px; opacity: 0; transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .show-t { opacity: 1 !important; transform: translateX(-50%) translateY(10px) scale(1) !important; }
+
+        /* KEYFRAMES */
+        @keyframes staggerIn { to { opacity: 1; transform: translateY(0); } }
+        @keyframes bounceCheck { 0% { transform: scale(1); } 50% { transform: scale(1.35); } 100% { transform: scale(1); } }
+        .bounce { animation: bounceCheck 0.5s cubic-bezier(0.25, 1.5, 0.5, 1); }
+        @keyframes shake { 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+        .shake { animation: shake 0.4s; border-color: var(--ios-red) !important; color: var(--ios-red) !important; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(0, 122, 255, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(0, 122, 255, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 122, 255, 0); } }
     </style>
 </head>
 <body>
 
-    <div class="app-container" id="login-screen">
-        <input type="password" id="pass" placeholder="••••••••">
+    <div id="login-screen">
+        <i class="ph-fill ph-lock-key" style="font-size: 3.5rem; color: var(--ios-blue); margin-bottom: 24px;"></i>
+        <h2 style="margin-bottom: 35px; font-weight: 800; font-size: 2rem; letter-spacing: -0.5px;">Santuário</h2>
+        <input type="password" id="pass" placeholder="••••••••" autocomplete="off">
+    </div>
+
+    <!-- Top Bar Sticky -->
+    <div class="top-bar-wrapper" id="top-bar" style="display:none; opacity:0; transition: opacity 0.5s;">
+        <div class="header">
+            <div>
+                <h2>Metas <i class="ph-fill ph-cloud-check" style="font-size: 1.3rem; color: var(--ios-blue)"></i></h2>
+                <p id="sub-msg">A sincronizar com a nuvem...</p>
+            </div>
+            <div class="header-actions">
+                <button class="icon-btn" onclick="window.toggleCal()"><i class="ph-bold ph-calendar-blank"></i></button>
+                <button class="icon-btn" onclick="window.openSets()"><i class="ph-bold ph-gear"></i></button>
+                <button class="icon-btn" onclick="location.reload()"><i class="ph-bold ph-lock-key"></i></button>
+            </div>
+        </div>
     </div>
 
     <div class="app-container" id="app-screen">
-        <div class="header">
-            <div>
-                <h2>Metas <i class="ph-fill ph-cloud-check" style="font-size: 1rem; color: var(--ios-blue)"></i></h2>
-                <p id="sub-msg">A sincronizar...</p>
-            </div>
-            <div class="header-actions">
-                <button class="icon-btn" onclick="window.toggleCal()"><i class="ph ph-calendar-blank"></i></button>
-                <button class="icon-btn" onclick="window.openSets()"><i class="ph ph-gear"></i></button>
-                <button class="icon-btn" onclick="location.reload()"><i class="ph ph-lock-key"></i></button>
-            </div>
-        </div>
-
+        
         <div class="ios-group dashboard">
             <div class="dash-header">
-                <span>Trabalho vs Pessoal</span>
-                <span id="dash-count">0</span>
+                <span>Balanço Pessoal</span>
+                <span id="dash-count" style="color: var(--ios-blue); font-weight: 800;">0 Concluídas</span>
             </div>
             <div class="chart-wrap"><canvas id="hChart"></canvas></div>
         </div>
 
-        <div class="ios-group cal-wrap" id="cal-container">
+        <div class="cal-wrap" id="cal-container">
+            <div style="display:flex; justify-content:space-between; padding:20px 24px 10px;">
+                <button onclick="window.changeMonth(-1)" style="background:var(--ios-bg); border:none; width:36px; height:36px; border-radius:50%; font-size:1.2rem; color:var(--ios-blue); cursor:pointer;"><i class="ph-bold ph-caret-left"></i></button>
+                <h3 id="month-display" style="font-size:1.15rem; font-weight:800;">Mês</h3>
+                <button onclick="window.changeMonth(1)" style="background:var(--ios-bg); border:none; width:36px; height:36px; border-radius:50%; font-size:1.2rem; color:var(--ios-blue); cursor:pointer;"><i class="ph-bold ph-caret-right"></i></button>
+            </div>
             <div class="cal-grid" id="cal-grid"></div>
         </div>
 
+        <div class="filter-indicator" id="filter-indicator">
+            <span id="filter-text">Exibindo metas do dia</span>
+            <button onclick="window.clearDateFilter()" style="background:var(--ios-bg); padding:8px 16px; border-radius:14px; border:none; color:var(--ios-red); cursor:pointer; font-weight:800;">Remover</button>
+        </div>
+
         <ul id="list"></ul>
-        <button class="add-btn" onclick="window.openModal()"><i class="ph ph-plus"></i></button>
     </div>
 
+    <button class="add-btn" id="add-btn-float" onclick="window.openModal()" style="display:none; opacity:0; transition: opacity 0.5s;">
+        <i class="ph-bold ph-plus"></i>
+    </button>
+
+    <!-- MODAL PRINCIPAL DE TAREFA -->
     <div class="modal" id="modal">
         <div class="m-content">
-            <div class="header" style="margin-bottom:15px">
-                <button class="icon-btn" onclick="window.closeModal()" style="background:none; box-shadow:none">Sair</button>
-                <h3 id="m-title">Nova Meta</h3>
-                <button class="icon-btn" onclick="window.saveMeta()" style="background:none; box-shadow:none; font-weight:700">Gravar</button>
+            <div class="modal-drag-handle"></div>
+            <div class="header" style="margin-bottom:24px; align-items: center;">
+                <button class="icon-btn" onclick="window.closeModal()" style="background:none; border:none; box-shadow:none; color:var(--text-muted); font-weight:700; width:auto; padding:0 10px;">Cancelar</button>
+                <h3 id="m-title" style="font-weight:800; font-size:1.3rem;">Nova Meta</h3>
+                <button class="icon-btn" onclick="window.saveMeta()" style="background:none; border:none; box-shadow:none; color:var(--ios-blue); font-weight:800; width:auto; padding:0 10px;">Gravar</button>
             </div>
             <div class="f-group">
-                <div class="f-row"><input type="text" id="inp-t" placeholder="Título"></div>
-                <div class="f-row"><textarea id="inp-d" placeholder="Notas" style="height:60px"></textarea></div>
+                <div class="f-row"><input type="text" id="inp-t" placeholder="O que vais conquistar?" style="font-size:1.25rem; font-weight:800; padding:6px 0;"></div>
+                <div class="f-row"><textarea id="inp-d" placeholder="Adiciona notas importantes..." style="height:70px"></textarea></div>
             </div>
             <div class="f-group">
-                <div class="f-row"><span>Data</span><input type="date" id="inp-date" style="text-align:right"></div>
-                <div class="f-row"><span>Categoria</span><input type="text" id="inp-c" placeholder="Trabalho, Pessoal..." style="text-align:right"></div>
-                <div class="f-row">
-                    <span>Repetir</span>
-                    <select id="inp-r" style="text-align:right">
-                        <option value="none">Nunca</option>
-                        <option value="daily">Diário</option>
-                        <option value="monthly">Mensal</option>
-                    </select>
+                <div class="f-row" style="border-bottom:none; padding-bottom:0;"><span style="width:100%; font-size:0.9rem; color:var(--text-muted); font-weight:800; text-transform:uppercase; letter-spacing:0.5px;">Cor da Etiqueta</span></div>
+                <div class="f-row" style="padding-top:0;">
+                    <div class="color-palette">
+                        <div class="color-swatch active" style="background: #007aff;" onclick="window.pickColor('#007aff')"></div>
+                        <div class="color-swatch" style="background: #ff3b30;" onclick="window.pickColor('#ff3b30')"></div>
+                        <div class="color-swatch" style="background: #ff9500;" onclick="window.pickColor('#ff9500')"></div>
+                        <div class="color-swatch" style="background: #34c759;" onclick="window.pickColor('#34c759')"></div>
+                        <div class="color-swatch" style="background: #af52de;" onclick="window.pickColor('#af52de')"></div>
+                        <div class="color-swatch" style="background: #8e8e93;" onclick="window.pickColor('#8e8e93')"></div>
+                    </div>
                 </div>
             </div>
-            <button id="btn-del" onclick="window.delMeta()" style="width:100%; padding:15px; color:var(--ios-red); border:none; background:var(--ios-card); border-radius:12px; font-weight:600; display:none">Eliminar Meta</button>
+            <div class="f-group">
+                <div class="f-row"><span style="flex-shrink:0; font-weight:700;">Data</span><input type="date" id="inp-date" style="text-align:right; font-weight:700; color:var(--ios-blue);"></div>
+                
+                <div class="f-row">
+                    <span style="flex-shrink:0; font-weight:700;">Categoria <span style="color:var(--ios-red)">*</span></span>
+                    <div style="display:flex; align-items:center; gap:8px; flex:1; justify-content:flex-end;">
+                        <select id="inp-c" class="native-select" style="flex:1;" required>
+                            <option value="" disabled selected>Selecione...</option>
+                        </select>
+                        <button class="icon-btn" onclick="window.openCatModal()" style="width:34px; height:34px; font-size:1.1rem; box-shadow:none; background:var(--ios-bg); color:var(--ios-blue)"><i class="ph-bold ph-pencil-simple"></i></button>
+                    </div>
+                </div>
+
+                <div class="f-row" style="flex-wrap: wrap;">
+                    <div style="display:flex; justify-content:space-between; width:100%; align-items: center;">
+                        <span style="font-weight:700;">Repetir</span>
+                        <select id="inp-r" class="native-select" onchange="window.checkRep()">
+                            <option value="none">Nunca</option>
+                            <option value="daily">Diariamente</option>
+                            <option value="monthly">Mensalmente</option>
+                            <option value="custom">Dias Específicos</option>
+                        </select>
+                    </div>
+                    <div class="week-wrap" id="week-wrap">
+                        <div class="week-day" id="wd-0" onclick="window.toggleDay(0)">D</div>
+                        <div class="week-day" id="wd-1" onclick="window.toggleDay(1)">S</div>
+                        <div class="week-day" id="wd-2" onclick="window.toggleDay(2)">T</div>
+                        <div class="week-day" id="wd-3" onclick="window.toggleDay(3)">Q</div>
+                        <div class="week-day" id="wd-4" onclick="window.toggleDay(4)">Q</div>
+                        <div class="week-day" id="wd-5" onclick="window.toggleDay(5)">S</div>
+                        <div class="week-day" id="wd-6" onclick="window.toggleDay(6)">S</div>
+                    </div>
+                </div>
+            </div>
+            <button id="btn-del" onclick="window.delMeta()" style="width:100%; padding:18px; color:var(--ios-red); border:none; background:var(--ios-card); border-radius:20px; font-weight:800; font-size:1.15rem; display:none; box-shadow: 0 4px 15px rgba(255, 59, 48, 0.1);">Eliminar Meta</button>
         </div>
     </div>
 
+    <!-- MODAL DE CATEGORIAS -->
+    <div class="modal" id="cat-modal" style="z-index: 110;">
+        <div class="m-content">
+            <div class="modal-drag-handle"></div>
+            <div class="header" style="margin-bottom:24px; align-items: center;">
+                <button class="icon-btn" onclick="window.closeCatModal()" style="background:none; border:none; box-shadow:none; color:var(--text-muted); font-weight:700; width:auto; padding:0 10px;"><i class="ph-bold ph-caret-left" style="margin-right:4px;"></i> Voltar</button>
+                <h3 style="font-size:1.2rem; font-weight:800;">Categorias</h3>
+                <div style="width:70px;"></div>
+            </div>
+            <div style="display:flex; gap:12px; margin-bottom:24px;">
+                <input type="text" id="new-cat-name" placeholder="Nova categoria..." style="flex:1; padding:18px 20px; border-radius:18px; border:2px solid transparent; background:var(--ios-card); color:var(--text-main); font-weight:700; font-size:1.05rem; outline:none; box-shadow:var(--shadow-soft);">
+                <button onclick="window.addCat()" style="background:var(--ios-blue); color:white; border:none; border-radius:18px; padding:0 24px; font-weight:800; cursor:pointer; box-shadow:0 4px 15px rgba(0,122,255,0.3); transition: transform 0.2s;"><i class="ph-bold ph-plus" style="font-size:1.3rem;"></i></button>
+            </div>
+            <div class="f-group" style="padding:0; box-shadow:var(--shadow-soft);">
+                <ul id="cat-list" style="margin-bottom:0; background:transparent; min-height:auto; display:block; box-shadow:none; gap:0;">
+                    <!-- Categorias injetadas -->
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE CONFIGURAÇÕES -->
     <div class="modal" id="sets-modal">
         <div class="m-content">
-            <div class="header"><h3>Ajustes</h3><button onclick="window.closeSets()" class="icon-btn">X</button></div>
-            <button onclick="window.toggleTheme()" style="width:100%; padding:15px; margin-bottom:10px; border-radius:12px; border:none; background:var(--ios-card); color:var(--ios-blue); font-weight:600">Alternar Modo Escuro</button>
-            <p style="text-align:center; font-size:0.8rem; color:var(--text-muted)">Os teus dados estão protegidos no Firebase Cloud.</p>
+            <div class="modal-drag-handle"></div>
+            <div class="header" style="margin-bottom: 24px;">
+                <div style="width:40px;"></div>
+                <h3 style="font-size:1.2rem; font-weight:800;">Ajustes</h3>
+                <button onclick="window.closeSets()" class="icon-btn" style="background:var(--ios-bg); color:var(--text-muted);"><i class="ph-bold ph-x"></i></button>
+            </div>
+            
+            <div class="f-group" style="padding: 5px 20px;">
+                <div class="f-row" style="cursor:pointer;" onclick="window.toggleTheme()">
+                    <div style="display:flex; align-items:center; gap:14px; font-weight:700;">
+                        <div style="background:#000; color:white; width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center;"><i class="ph-fill ph-moon"></i></div>
+                        Modo Escuro
+                    </div>
+                    <i class="ph-bold ph-arrows-left-right" style="color:var(--text-muted)"></i>
+                </div>
+            </div>
+
+            <div class="f-group" style="padding: 5px 20px;">
+                <div class="f-row" style="cursor:pointer;" onclick="window.exportarDados()">
+                    <div style="display:flex; align-items:center; gap:14px; font-weight:700;">
+                        <div style="background:var(--ios-green); color:white; width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center;"><i class="ph-bold ph-download-simple"></i></div>
+                        Exportar Backup
+                    </div>
+                </div>
+                <div class="f-row" style="cursor:pointer; border-bottom:none;" onclick="document.getElementById('import-file').click()">
+                    <div style="display:flex; align-items:center; gap:14px; font-weight:700;">
+                        <div style="background:var(--ios-orange); color:white; width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center;"><i class="ph-bold ph-upload-simple"></i></div>
+                        Importar Backup
+                    </div>
+                </div>
+                <input type="file" id="import-file" style="display: none;" accept=".json" onchange="window.importarDados(event)">
+            </div>
+            <p style="text-align:center; font-size:0.9rem; color:var(--text-muted); margin-top:24px; font-weight:600;">Os teus dados fluem na Nuvem da Google.</p>
         </div>
     </div>
 
     <div id="toast"></div>
 
-     <script type="module">
+    <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
-        // As tuas credenciais reais do Firebase
+        // As tuas credenciais do Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyBOwCPY4pqZTdwE2FonTF_k7mKRod1KIes",
             authDomain: "metas-214f0.firebaseapp.com",
@@ -206,207 +351,273 @@
         
         const PASS = "rafa2026";
         let metas = [];
+        let categorias = []; 
         let user = null;
         let editId = null;
         let chart = null;
+        let currentMonth = new Date();
+        
+        let filterDate = null; 
+        let selectedColor = "#007aff"; 
+        let customDays = []; 
 
-        // Login Anónimo Firebase
+        // Login Anónimo
         const init = async () => {
             try {
                 await signInAnonymously(auth);
                 onAuthStateChanged(auth, (u) => {
                     user = u;
                     if(u && document.getElementById('app-screen').classList.contains('visible')) {
-                        sync();
+                        syncMetas(); syncCategorias();
                     }
                 });
-            } catch (error) {
-                console.error("Erro na autenticação. Verifica se ativaste o Login Anónimo no Firebase!", error);
-                document.getElementById('sub-msg').innerText = "Erro ao ligar à nuvem";
-            }
+            } catch (error) { document.getElementById('sub-msg').innerText = "Erro na nuvem"; }
         };
         init();
 
-        // Sincronização Firestore
-        function sync() {
+        function syncMetas() {
             if(!user) return;
             const ref = collection(db, 'artifacts', appId, 'users', user.uid, 'metas');
             onSnapshot(ref, (snap) => {
-                metas = [];
-                snap.forEach(d => metas.push(d.data()));
-                render();
-                document.getElementById('sub-msg').innerText = "Dados em tempo real";
-            }, (error) => {
-                console.error("Erro de permissão no Firestore:", error);
-                document.getElementById('sub-msg').innerText = "Sem permissão (Verifica Regras)";
+                metas = []; snap.forEach(d => metas.push(d.data()));
+                render(); document.getElementById('sub-msg').innerText = "Sincronizado";
             });
         }
 
-        // Validação da Palavra-Passe
+        function syncCategorias() {
+            if(!user) return;
+            const catRef = collection(db, 'artifacts', appId, 'users', user.uid, 'categorias');
+            onSnapshot(catRef, (snap) => {
+                categorias = []; snap.forEach(d => categorias.push(d.data()));
+                renderCatSelect(); renderCatList();   
+            });
+        }
+
         document.getElementById('pass').addEventListener('keypress', (e) => {
             if(e.key === 'Enter') {
                 if(e.target.value === PASS) {
-                    document.getElementById('login-screen').style.display = 'none';
-                    document.getElementById('app-screen').classList.add('visible');
-                    if(user) sync(); 
+                    document.getElementById('login-screen').style.transform = 'scale(1.1)';
+                    document.getElementById('login-screen').style.opacity = '0';
+                    setTimeout(() => {
+                        document.getElementById('login-screen').style.display = 'none';
+                        document.getElementById('top-bar').style.display = 'flex';
+                        document.getElementById('app-screen').classList.add('visible');
+                        setTimeout(() => {
+                            document.getElementById('top-bar').style.opacity = '1';
+                            document.getElementById('add-btn-float').style.display = 'flex';
+                            setTimeout(()=> document.getElementById('add-btn-float').style.opacity = '1', 50);
+                        }, 50);
+                        if(user) { syncMetas(); syncCategorias(); } 
+                    }, 400);
                 } else {
-                    e.target.classList.add('shake');
-                    setTimeout(() => e.target.classList.remove('shake'), 300);
-                    e.target.value = '';
+                    e.target.classList.add('shake'); setTimeout(() => e.target.classList.remove('shake'), 400); e.target.value = '';
                 }
             }
         });
 
-        // Render UI
+        function hexToRgba(hex, alpha) {
+            let r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        }
+
         function render() {
             const list = document.getElementById('list');
-            list.innerHTML = metas.length ? '' : '<div style="padding:40px; text-align:center; color:var(--ios-gray)">Sem metas na nuvem.</div>';
+            list.innerHTML = '';
             
-            metas.sort((a,b) => a.done - b.done).forEach(m => {
+            let displayMetas = metas;
+            if (filterDate) {
+                displayMetas = metas.filter(m => m.date === filterDate);
+                const parts = filterDate.split('-');
+                document.getElementById('filter-text').innerText = `Dia ${parts[2]}/${parts[1]}`;
+                document.getElementById('filter-indicator').classList.add('show');
+            } else {
+                document.getElementById('filter-indicator').classList.remove('show');
+            }
+
+            if(displayMetas.length === 0) {
+                list.innerHTML = `<div class="empty-state"><i class="ph-fill ph-leaf" style="color:var(--ios-green); opacity:0.8"></i><p style="font-weight:700; font-size:1.15rem;">${filterDate ? 'Dia livre!' : 'Pronto para começar?'}</p></div>`;
+            }
+            
+            displayMetas.sort((a,b) => a.done - b.done).forEach((m, index) => {
                 const li = document.createElement('li');
+                const mColor = m.color || '#007aff';
+                
+                li.style.animationDelay = `${index * 0.05}s`;
                 if(m.done) li.classList.add('done');
+                
+                let badges = '';
+                if(m.date) badges += `<span class="badge" style="background:var(--ios-separator); color:var(--text-muted)"><i class="ph-bold ph-calendar-blank"></i> ${m.date.split('-').reverse().join('/')}</span>`;
+                if(m.cat) badges += `<span class="badge" style="background:${hexToRgba(mColor, 0.15)}; color:${mColor}"><i class="ph-fill ph-tag"></i> ${m.cat}</span>`;
+                if(m.rep && m.rep !== 'none') badges += `<span class="badge" style="background:var(--ios-separator); color:var(--text-muted)"><i class="ph-bold ph-arrows-clockwise"></i></span>`;
+
                 li.innerHTML = `
-                    <div class="check ${m.done?'bounce':''}" onclick="window.toggle(${m.id}, event)" style="${m.done?'background:var(--ios-blue); border-color:var(--ios-blue)':''}">
-                        ${m.done?'<i class="ph ph-check" style="color:white"></i>':''}
+                    <div class="color-strip" style="background:${mColor}"></div>
+                    <div class="check ${m.done?'bounce':''}" onclick="window.toggle(${m.id}, event)" style="border-color:${mColor}; ${m.done?`background:${mColor}; border-color:${mColor};`:''}">
+                        ${m.done?'<i class="ph-bold ph-check" style="color:white; font-size:1rem;"></i>':''}
                     </div>
-                    <div style="flex:1" onclick="window.openModal(${m.id})">
-                        <div class="txt" style="font-weight:600">${m.title}</div>
-                        <div class="badge">${m.date || 'Sem data'} ${m.cat ? ' • '+m.cat : ''}</div>
+                    <div class="goal-content" onclick="window.openModal(${m.id})">
+                        <div class="txt" style="font-weight:800; color:${!m.done ? mColor : 'var(--text-muted)'}; font-size:1.2rem; letter-spacing:-0.4px;">${m.title}</div>
+                        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;">${badges}</div>
                     </div>
                 `;
                 list.appendChild(li);
             });
-            drawDash();
-            drawCal();
+            drawDash(); drawCal();
         }
 
         async function toggle(id, e) {
-            e.stopPropagation();
-            const m = metas.find(x => x.id === id);
-            if(!m) return;
+            e.stopPropagation(); const m = metas.find(x => x.id === id); if(!m) return;
             m.done = !m.done;
-            if(m.done && m.rep !== 'none') {
-                let d = m.date ? new Date(m.date) : new Date();
-                if(m.rep === 'daily') d.setDate(d.getDate()+1);
-                else d.setMonth(d.getMonth()+1);
-                m.date = d.toISOString().split('T')[0];
-                m.done = false;
-                toast("Reagendado!");
+            if(m.done && m.rep && m.rep !== 'none') {
+                let d = m.date ? new Date(m.date + 'T00:00:00') : new Date(); 
+                if(m.rep === 'daily') { d.setDate(d.getDate()+1); } 
+                else if(m.rep === 'monthly') { d.setMonth(d.getMonth()+1); } 
+                else if(m.rep === 'custom' && m.customDays && m.customDays.length > 0) {
+                    d.setDate(d.getDate() + 1);
+                    for(let i=0; i<7; i++) { if(m.customDays.includes(d.getDay().toString())) break; d.setDate(d.getDate() + 1); }
+                } else { d.setDate(d.getDate()+1); }
+                m.date = d.toISOString().split('T')[0]; m.done = false; toast("Reagendado para a próxima data!", "ph-arrows-clockwise");
             }
-            try {
-                await setDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'metas', id.toString()), m);
-            } catch(e) { toast("Erro ao atualizar."); console.error(e); }
+            try { await setDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'metas', id.toString()), m); } catch(e) { toast("Erro ao atualizar.", "ph-warning"); }
         }
 
         function drawDash() {
-            const canvas = document.getElementById('hChart');
-            if (!canvas) return;
-            
-            const ctx = canvas.getContext('2d');
-            let w = 0, p = 0;
-            metas.filter(x => x.done).forEach(x => {
-                const c = (x.cat||'').toLowerCase();
-                if(c.includes('trab') || c.includes('prof')) w++;
-                else if(c.includes('pess') || c.includes('vida')) p++;
-            });
-            
-            document.getElementById('dash-count').innerText = (w+p) + " Totais";
+            const canvas = document.getElementById('hChart'); if (!canvas) return; 
+            const ctx = canvas.getContext('2d'); let w = 0, p = 0;
+            metas.filter(x => x.done).forEach(x => { const c = (x.cat||'').toLowerCase(); if(c.includes('trab') || c.includes('prof')) w++; else if(c.includes('pess') || c.includes('vida')) p++; });
+            document.getElementById('dash-count').innerText = (w+p) + " Concluídas";
             if(chart) chart.destroy();
-            chart = new Chart(ctx, {
-                type: 'bar',
-                data: { labels: ['Trabalho', 'Pessoal'], datasets: [{ data: [w, p], backgroundColor: ['#007aff', '#34c759'], borderRadius: 6 }] },
-                options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { grid: { display: false }, ticks: { color: '#8e8e93' } } } }
-            });
+            chart = new Chart(ctx, { type: 'bar', data: { labels: ['Trabalho', 'Pessoal'], datasets: [{ data: [w, p], backgroundColor: ['#007aff', '#34c759'], borderRadius: 8, borderSkipped: false }] }, options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: { x: { display: false }, y: { grid: { display: false }, border: {display: false}, ticks: { color: '#8e8e93', font: {weight: '700', family: '-apple-system'} } } }, animation: { duration: 1000, easing: 'easeOutExpo' } } });
         }
 
         function drawCal() {
-            const grid = document.getElementById('cal-grid');
-            grid.innerHTML = '';
-            const now = new Date();
-            const days = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
+            const grid = document.getElementById('cal-grid'); grid.innerHTML = '';
+            const y = currentMonth.getFullYear(); const m = currentMonth.getMonth();
+            for(let i=0; i<new Date(y, m, 1).getDay(); i++) grid.appendChild(document.createElement('div'));
+            const days = new Date(y, m+1, 0).getDate(); const todayStr = new Date().toISOString().split('T')[0];
             for(let i=1; i<=days; i++) {
-                const div = document.createElement('div');
-                div.className = 'day-cell';
-                div.innerText = i;
-                const dStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+                const div = document.createElement('div'); div.className = 'day-cell'; div.innerText = i;
+                const dStr = `${y}-${String(m+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
                 const match = metas.filter(x => x.date === dStr);
-                if(i === now.getDate()) div.classList.add('day-today');
                 if(match.length) {
                     const done = match.filter(x => x.done).length;
-                    if(done === 0) div.classList.add('day-red');
-                    else if(done < match.length) div.classList.add('day-yellow');
-                    else div.classList.add('day-perfect');
-                }
+                    if(done === 0) div.classList.add('day-red'); else if(done < match.length) div.classList.add('day-yellow'); else div.classList.add('day-perfect');
+                } else if(dStr === todayStr) { div.classList.add('day-today'); }
+                if(filterDate === dStr) div.classList.add('day-selected');
+                div.onclick = () => { if(filterDate === dStr) filterDate = null; else filterDate = dStr; render(); };
                 grid.appendChild(div);
             }
         }
 
+        // Categorias
+        function renderCatSelect() {
+            const sel = document.getElementById('inp-c'); const val = sel.value; 
+            sel.innerHTML = '<option value="" disabled selected>Selecione...</option>';
+            categorias.forEach(c => { sel.innerHTML += `<option value="${c.name}">${c.name}</option>`; });
+            if(val && categorias.find(c => c.name === val)) { sel.value = val; } 
+            else if (val && val !== '') { sel.innerHTML += `<option value="${val}">${val} (Antiga)</option>`; sel.value = val; }
+        }
+
+        function renderCatList() {
+            const list = document.getElementById('cat-list');
+            if (categorias.length === 0) { list.innerHTML = '<div style="text-align:center; padding:30px 20px; color:var(--text-muted); font-size:1.05rem; font-weight:600;">Nenhuma categoria criada.</div>'; return; }
+            list.innerHTML = '';
+            categorias.forEach(c => {
+                list.innerHTML += `<li style="padding:18px 20px; display:flex; justify-content:space-between; align-items:center; background:var(--ios-bg); margin-bottom:12px; border-radius:20px; border:1px solid var(--ios-separator); box-shadow:none; opacity:1; transform:none; animation:none;"><span style="font-weight:700; font-size:1.1rem;">${c.name}</span><button onclick="window.delCat(${c.id})" style="background:var(--ios-card); border:none; color:var(--ios-red); cursor:pointer; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.05);"><i class="ph-bold ph-trash" style="font-size:1.2rem;"></i></button></li>`;
+            });
+        }
+
+        window.openCatModal = () => { document.getElementById('cat-modal').classList.add('open'); renderCatList(); };
+        window.closeCatModal = () => document.getElementById('cat-modal').classList.remove('open');
+        window.addCat = async () => {
+            const name = document.getElementById('new-cat-name').value.trim();
+            if(!name) { toast("Escreve um nome.", "ph-warning"); return; }
+            if(categorias.find(c => c.name.toLowerCase() === name.toLowerCase())) { toast("Já existe.", "ph-warning"); return; }
+            const data = { id: Date.now(), name: name };
+            try { await setDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'categorias', data.id.toString()), data); document.getElementById('new-cat-name').value = ''; toast("Categoria criada!", "ph-check"); } catch(e) {}
+        };
+        window.delCat = async (id) => { try { await deleteDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'categorias', id.toString())); toast("Apagada.", "ph-trash"); } catch(e) {} };
+
+        // Formulário Meta
+        window.pickColor = (hex) => { selectedColor = hex; document.querySelectorAll('.color-swatch').forEach(e => e.classList.remove('active')); event.target.classList.add('active'); };
+        window.checkRep = () => { const val = document.getElementById('inp-r').value; document.getElementById('week-wrap').style.display = (val === 'custom') ? 'flex' : 'none'; };
+        window.toggleDay = (dayStr) => {
+            const el = document.getElementById('wd-'+dayStr); el.classList.toggle('active');
+            if(el.classList.contains('active')) { if(!customDays.includes(dayStr.toString())) customDays.push(dayStr.toString()); } 
+            else { customDays = customDays.filter(d => d !== dayStr.toString()); }
+        };
+        window.clearDateFilter = () => { filterDate = null; render(); };
+
         window.openModal = (id = null) => {
-            editId = id;
-            const m = metas.find(x => x.id === id);
-            document.getElementById('m-title').innerText = id ? 'Editar' : 'Nova Meta';
+            editId = id; const m = metas.find(x => x.id === id);
+            document.getElementById('m-title').innerText = id ? 'Editar Meta' : 'Nova Meta';
             document.getElementById('inp-t').value = id ? m.title : '';
             document.getElementById('inp-d').value = id ? m.desc : '';
-            document.getElementById('inp-date').value = id ? m.date : '';
+            document.getElementById('inp-date').value = id ? (m.date || filterDate || '') : (filterDate || ''); 
             document.getElementById('inp-c').value = id ? m.cat : '';
-            document.getElementById('inp-r').value = id ? m.rep : 'none';
+            document.getElementById('inp-r').value = id ? (m.rep || 'none') : 'none';
+            window.checkRep();
+            customDays = id && m.customDays ? [...m.customDays] : [];
+            for(let i=0; i<7; i++) { const el = document.getElementById('wd-'+i); if(customDays.includes(i.toString())) el.classList.add('active'); else el.classList.remove('active'); }
+            selectedColor = id && m.color ? m.color : '#007aff';
+            document.querySelectorAll('.color-swatch').forEach(e => { e.classList.remove('active'); if(e.style.backgroundColor === selectedColor || e.style.backgroundColor.replace(/\s/g, '') === selectedColor) e.classList.add('active'); });
             document.getElementById('btn-del').style.display = id ? 'block' : 'none';
             document.getElementById('modal').classList.add('open');
         };
+
         window.closeModal = () => document.getElementById('modal').classList.remove('open');
         
         window.saveMeta = async () => {
-            const t = document.getElementById('inp-t').value;
-            if(!t) return;
+            const t = document.getElementById('inp-t').value.trim();
+            if(!t) { toast("O título é obrigatório.", "ph-warning"); return; }
+            
+            const catVal = document.getElementById('inp-c').value;
+            if(!catVal) { toast("Seleciona uma categoria.", "ph-warning-circle"); return; }
+            
+            const rep = document.getElementById('inp-r').value;
+            if(rep === 'custom' && customDays.length === 0) { toast("Selecione os dias.", "ph-warning"); return; }
+
             const data = {
-                id: editId || Date.now(),
-                title: t,
-                desc: document.getElementById('inp-d').value,
-                date: document.getElementById('inp-date').value,
-                cat: document.getElementById('inp-c').value,
-                rep: document.getElementById('inp-r').value,
-                done: editId ? metas.find(x => x.id === editId).done : false
+                id: editId || Date.now(), title: t, desc: document.getElementById('inp-d').value, date: document.getElementById('inp-date').value, cat: catVal, rep: rep, customDays: customDays, color: selectedColor, done: editId ? metas.find(x => x.id === editId).done : false
             };
             try {
                 await setDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'metas', data.id.toString()), data);
-                window.closeModal();
-                toast("Nuvem atualizada!");
-            } catch (e) { toast("Erro ao gravar. Verifica regras."); console.error(e); }
+                window.closeModal(); toast("Guardado!", "ph-check-circle");
+            } catch (e) { toast("Erro ao gravar.", "ph-warning"); }
         };
 
-        window.delMeta = async () => {
-            if(editId) {
-                try {
-                    await deleteDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'metas', editId.toString()));
-                    window.closeModal();
-                } catch(e) { console.error(e); }
-            }
-        };
-
+        window.delMeta = async () => { if(editId) { try { await deleteDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'metas', editId.toString())); window.closeModal(); toast("Apagado!", "ph-trash"); } catch(e) {} } };
         window.toggleCal = () => document.getElementById('cal-container').classList.toggle('open');
         window.openSets = () => document.getElementById('sets-modal').classList.add('open');
         window.closeSets = () => document.getElementById('sets-modal').classList.remove('open');
-        window.toggleTheme = () => {
-            const d = document.documentElement;
-            d.getAttribute('data-theme') === 'dark' ? d.removeAttribute('data-theme') : d.setAttribute('data-theme', 'dark');
+        
+        window.changeMonth = (val) => { 
+            currentMonth.setDate(1); // Correção do bug do Calendário
+            currentMonth.setMonth(currentMonth.getMonth() + val); 
+            drawCal(); 
         };
-        window.toggle = toggle;
 
-        function toast(t) {
+        window.toggleTheme = () => { const d = document.documentElement; d.getAttribute('data-theme') === 'dark' ? d.removeAttribute('data-theme') : d.setAttribute('data-theme', 'dark'); toast("Tema alterado", "ph-moon"); };
+        
+        window.exportarDados = () => { const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(metas)); const a = document.createElement('a'); a.setAttribute("href", dataStr); a.setAttribute("download", "santuario_metas_nuvem.json"); document.body.appendChild(a); a.click(); a.remove(); toast("Backup exportado!", "ph-download-simple"); };
+        window.importarDados = async (event) => {
+            const file = event.target.files[0]; if (!file) return; const reader = new FileReader();
+            reader.onload = async function(e) { try { const imp = JSON.parse(e.target.result); if (Array.isArray(imp)) { for(let m of imp) await setDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'metas', m.id.toString()), m); window.closeSets(); toast("Restaurado!", "ph-cloud-check"); } } catch (err) { toast("Erro ao ler.", "ph-warning"); } };
+            reader.readAsText(file); event.target.value = "";
+        };
+
+        window.toggle = toggle; 
+
+        function toast(t, icon="ph-info") {
             const el = document.getElementById('toast');
-            el.innerText = t; el.classList.add('show-t');
-            setTimeout(() => el.classList.remove('show-t'), 2000);
+            el.innerHTML = `<i class="ph-fill ${icon}" style="font-size:1.4rem; color:var(--ios-blue);"></i> ${t}`;
+            el.classList.add('show-t'); setTimeout(() => el.classList.remove('show-t'), 2500);
         }
 
-        // --- REGISTO DO SERVICE WORKER (PWA) ---
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('Service Worker registado com sucesso!', reg.scope))
-                    .catch(err => console.error('Erro ao registar o Service Worker:', err));
-            });
-        }
+        if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW n/a')); }); }
     </script>
-
 </body>
 </html>
+
+
+
