@@ -1,15 +1,23 @@
 {
   "name": "Santuário de Metas",
   "short_name": "Metas",
+  "description": "O teu gestor pessoal de hábitos e metas",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#f2f2f7",
   "theme_color": "#007aff",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/762/762686.png",
+      "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Reminders_App_Icon_%28macOS%29.png/192px-Reminders_App_Icon_%28macOS%29.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Reminders_App_Icon_%28macOS%29.png/512px-Reminders_App_Icon_%28macOS%29.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
