@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.json">
     
-    <!-- FONTE UNIVERSAL PREMIUM (INTER) -->
+    <!-- FONTE UNIVERSAL (Corrige problemas no Windows/Linux) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -24,10 +24,10 @@
             --text-muted: #8e8e93;
             --accent: #007aff;
             --danger: #ff3b30;
-            --separator: rgba(0, 0, 0, 0.06);
-            --shadow-soft: 0 12px 30px rgba(0,0,0,0.03);
+            --separator: rgba(0, 0, 0, 0.05);
+            --shadow-soft: 0 12px 30px rgba(0,0,0,0.04);
             --shadow-card: 0 16px 40px rgba(0,0,0,0.06);
-            --radius-card: 32px; 
+            --radius-card: 28px; 
             --radius-pill: 999px;
             --overlay: rgba(0, 0, 0, 0.35);
         }
@@ -44,25 +44,23 @@
             --overlay: rgba(0, 0, 0, 0.7);
         }
 
-        /* Aplicação da Nova Fonte a tudo */
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; -webkit-tap-highlight-color: transparent; }
-        
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; transition: background-color 0.4s; overflow-x: hidden; }
         
-        /* EXPANSÃO PARA DESKTOP */
-        .app-container { width: 100%; max-width: 900px; padding-bottom: 140px; position: relative; }
+        /* ADAPTAÇÃO AO DESKTOP / NOTEBOOK */
+        .app-container { width: 100%; max-width: 850px; margin: 0 auto; padding-bottom: 140px; position: relative; }
 
         /* --- LOGIN --- */
         #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: var(--bg-color); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 200; transition: 0.5s; }
-        #login-screen input { width: 90%; max-width: 320px; padding: 24px; border-radius: var(--radius-pill); border: 2px solid transparent; background: var(--card-bg); font-size: 1.8rem; color: var(--text-main); outline: none; text-align: center; letter-spacing: 8px; box-shadow: var(--shadow-soft); transition: 0.3s; }
+        #login-screen input { width: 90%; max-width: 360px; padding: 24px; border-radius: var(--radius-pill); border: 2px solid transparent; background: var(--card-bg); font-size: 1.8rem; color: var(--text-main); outline: none; text-align: center; letter-spacing: 8px; box-shadow: var(--shadow-soft); transition: 0.3s; }
         #login-screen input:focus { transform: translateY(-4px); box-shadow: var(--shadow-card); border-color: rgba(0,122,255,0.3); }
 
         /* --- MAIN APP --- */
-        #app-screen { display: none; opacity: 0; transform: translateY(20px); transition: 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); padding-top: 20px; }
+        #app-screen { display: none; opacity: 0; transform: translateY(20px); transition: 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); padding-top: 30px; }
         #app-screen.visible { display: block; opacity: 1; transform: translateY(0); }
 
         .header { display: flex; justify-content: space-between; align-items: center; padding: 0 24px 10px; }
-        .header h2 { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.8px; }
+        .header h2 { font-size: 2.2rem; font-weight: 800; letter-spacing: -1px; }
         .header-actions { display: flex; gap: 12px; }
         .icon-btn { background: var(--card-bg); border: none; color: var(--text-main); font-size: 1.3rem; width: 48px; height: 48px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: var(--shadow-soft); transition: 0.2s; }
         .icon-btn:active { transform: scale(0.9); }
@@ -79,19 +77,21 @@
         .view-section { display: none; animation: fadeIn 0.4s; }
         .view-section.active { display: block; }
 
-        /* --- TIMELINE HORIZONTAL --- */
+        /* --- TIMELINE HORIZONTAL CORRIGIDA PARA PC --- */
         .timeline-wrapper { padding: 10px 0 20px; width: 100%; overflow: hidden; }
         .timeline-header { padding: 0 24px 10px; display: flex; justify-content: space-between; align-items: center; }
         .month-picker-btn { font-size: 1.3rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 6px; cursor: pointer; background: transparent; border: none; }
         .btn-hoje { background: var(--card-bg); border: none; padding: 8px 16px; border-radius: var(--radius-pill); font-weight: 800; font-size: 0.85rem; color: var(--accent); cursor: pointer; box-shadow: var(--shadow-soft); transition: 0.2s; }
         .btn-hoje:active { transform: scale(0.9); }
         
-        .timeline-scroll { display: flex; overflow-x: auto; gap: 14px; padding: 5px 24px 20px; scroll-snap-type: x mandatory; scrollbar-width: thin; scrollbar-color: var(--separator) transparent; }
-        .timeline-scroll::-webkit-scrollbar { height: 6px; }
-        .timeline-scroll::-webkit-scrollbar-thumb { background-color: var(--separator); border-radius: 10px; }
+        .timeline-scroll { display: flex; overflow-x: auto; gap: 14px; padding: 10px 24px 24px; scroll-snap-type: x mandatory; scrollbar-width: auto; scrollbar-color: var(--separator) transparent; }
+        /* Scrollbar customizada para Windows/Linux */
+        .timeline-scroll::-webkit-scrollbar { height: 8px; }
         .timeline-scroll::-webkit-scrollbar-track { background: transparent; }
+        .timeline-scroll::-webkit-scrollbar-thumb { background-color: var(--separator); border-radius: 10px; }
+        .timeline-scroll::-webkit-scrollbar-thumb:hover { background-color: var(--text-muted); }
         
-        .date-card { flex: 0 0 70px; height: 95px; background: var(--card-bg); border-radius: 28px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; box-shadow: var(--shadow-soft); scroll-snap-align: center; border: 2px solid transparent; }
+        .date-card { flex: 0 0 75px; height: 100px; background: var(--card-bg); border-radius: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; box-shadow: var(--shadow-soft); scroll-snap-align: center; border: 2px solid transparent; }
         .date-card span:nth-child(1) { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
         .date-card span:nth-child(2) { font-size: 1.6rem; font-weight: 800; color: var(--text-main); margin-top: 2px; }
         .date-card .indicator { width: 6px; height: 6px; border-radius: 50%; background: transparent; margin-top: 6px; }
@@ -109,60 +109,59 @@
         .progress-ring::before { content: ''; position: absolute; width: 44px; height: 44px; background: var(--card-bg); border-radius: 50%; }
         .progress-ring span { position: relative; font-weight: 800; font-size: 0.9rem; color: var(--text-main); }
 
-        /* --- GRID DE METAS (Responsivo) --- */
-        .tasks-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; padding: 0 24px; }
-        .task-card { background: var(--card-bg); border-radius: var(--radius-card); padding: 24px; display: flex; flex-direction: column; justify-content: space-between; min-height: 180px; box-shadow: var(--shadow-soft); position: relative; cursor: pointer; transition: 0.3s; animation: staggerIn 0.4s ease forwards; opacity: 0; transform: translateY(20px); border-top: 8px solid transparent; }
-        .task-card:active { transform: scale(0.95); }
-        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
-        .card-cat { font-size: 0.8rem; font-weight: 800; color: var(--text-muted); background: var(--bg-color); padding: 6px 12px; border-radius: 12px; max-width: 70%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        /* --- GRID DE METAS (Responsivo em colunas) --- */
+        .tasks-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; padding: 0 24px; }
+        .task-card { background: var(--card-bg); border-radius: var(--radius-card); padding: 20px; display: flex; flex-direction: column; justify-content: space-between; min-height: 180px; box-shadow: var(--shadow-soft); position: relative; cursor: pointer; transition: 0.3s; animation: staggerIn 0.4s ease forwards; opacity: 0; transform: translateY(20px); border-top: 8px solid transparent; }
+        .task-card:active { transform: scale(0.96); }
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+        .card-cat { font-size: 0.8rem; font-weight: 800; color: var(--text-muted); background: var(--bg-color); padding: 6px 12px; border-radius: 10px; max-width: 70%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .check-circle { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--separator); display: flex; justify-content: center; align-items: center; transition: 0.3s; background: var(--card-bg); }
         .card-body { flex: 1; display: flex; align-items: center; padding: 10px 0; }
         .card-title { font-size: 1.2rem; font-weight: 800; line-height: 1.3; }
         .card-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; flex-wrap: wrap; gap: 6px; }
-        
+
         .task-card.done { opacity: 0.6; background: var(--bg-color); box-shadow: none; border-top-color: var(--separator) !important; }
         .task-card.done .card-title { text-decoration: line-through; color: var(--text-muted); }
         .empty-grid { grid-column: 1 / -1; text-align: center; padding: 40px 20px; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 10px; }
 
-        /* --- NOVA VISÃO GERAL (GRID RESPONSIVO) --- */
-        .vision-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; padding: 0 24px 24px; }
+        /* --- VISÃO GERAL (DASHBOARD) --- */
+        .vision-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; padding: 0 24px 24px; }
         .vision-group { padding: 24px; background: var(--card-bg); border-radius: var(--radius-card); box-shadow: var(--shadow-soft); animation: fadeIn 0.5s; display: flex; flex-direction: column; justify-content: center; }
-        .vision-group h4 { font-size: 1.15rem; font-weight: 800; margin-bottom: 16px; color: var(--text-main); }
+        .vision-group h4 { font-size: 1.15rem; font-weight: 800; margin-bottom: 16px; color: var(--text-main); text-align: center; }
         .big-number { font-size: 4.5rem; font-weight: 800; color: var(--accent); text-align: center; line-height: 1; margin-top: 10px; }
         
         .upcoming-card { background: var(--bg-color); border-radius: 20px; padding: 16px; display: flex; align-items: center; gap: 16px; margin-bottom: 12px; cursor: pointer; transition: 0.3s; }
         .upcoming-card:active { transform: scale(0.96); }
-        .upcoming-date-box { background: rgba(0,122,255,0.1); color: var(--accent); border-radius: 16px; padding: 10px; text-align: center; min-width: 65px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .upcoming-date-box .day { font-size: 1.4rem; font-weight: 800; line-height: 1; }
-        .upcoming-date-box .month { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; margin-top: 4px; }
+        .upcoming-date-box { background: rgba(0,122,255,0.1); color: var(--accent); border-radius: 16px; padding: 12px; text-align: center; min-width: 75px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .upcoming-date-box .day { font-size: 1.5rem; font-weight: 800; line-height: 1; }
+        .upcoming-date-box .month { font-size: 0.8rem; font-weight: 800; text-transform: uppercase; margin-top: 4px; }
         .upcoming-info { flex: 1; }
-        .upcoming-title { font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+        .upcoming-title { font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
 
-        /* --- LISTA DE NOTAS (Responsivo) --- */
-        .notes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; padding: 0 24px; }
+        /* --- LISTA DE NOTAS --- */
+        .notes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding: 0 24px; }
         .note-card { background: var(--card-bg); border-radius: var(--radius-card); padding: 24px; box-shadow: var(--shadow-soft); cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; gap: 10px; animation: staggerIn 0.4s ease forwards; opacity: 0; transform: translateY(20px); border-left: 8px solid var(--text-muted); }
         .note-card:active { transform: scale(0.96); }
         .note-title { font-size: 1.25rem; font-weight: 800; color: var(--text-main); }
         .note-preview { font-size: 1rem; color: var(--text-muted); font-weight: 500; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.5; }
         .note-date { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-top: auto; padding-top: 10px; display: flex; align-items: center; gap: 6px; }
 
-        /* --- FLOATING BUTTON (Posição Dinâmica para Desktop) --- */
-        .add-btn { position: fixed; bottom: 100px; width: 64px; height: 64px; border-radius: var(--radius-pill); background: var(--text-main); color: var(--bg-color); display: flex; align-items: center; justify-content: center; font-size: 2.2rem; border: none; box-shadow: 0 10px 25px rgba(0,0,0,0.2); cursor: pointer; z-index: 50; transition: 0.3s; transform: rotate(0deg); 
-            /* A Magia do Posicionamento Responsivo */
-            right: 24px;
-        }
-        @media (min-width: 950px) {
-            .add-btn { right: calc(50vw - 450px + 24px); }
+        /* --- FLOATING BUTTON INTELIGENTE PARA DESKTOP --- */
+        .add-btn { position: fixed; bottom: 100px; right: 24px; width: 64px; height: 64px; border-radius: var(--radius-pill); background: var(--text-main); color: var(--bg-color); display: flex; align-items: center; justify-content: center; font-size: 2.2rem; border: none; box-shadow: 0 10px 25px rgba(0,0,0,0.2); cursor: pointer; z-index: 50; transition: 0.3s; }
+        @media (min-width: 900px) {
+            .add-btn { right: calc(50vw - 425px + 24px); } /* Fica ancorado à largura do container */
         }
         .add-btn:active { transform: scale(0.9) rotate(90deg); }
 
-        /* --- MODAIS FULL SCREEN (Responsivo) --- */
+        /* --- MODAIS FULL SCREEN (Adaptados para PC) --- */
         .modal-fs { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--bg-color); z-index: 100; transform: translateX(100vw); transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); }
         .modal-fs.open { transform: translateX(0); }
-        .fs-wrapper { width: 100%; max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; height: 100%; }
+        .fs-wrapper { width: 100%; max-width: 850px; margin: 0 auto; display: flex; flex-direction: column; height: 100%; }
+        
         .fs-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px 10px; background: transparent; }
-        .fs-btn-text { background: transparent; border: none; color: var(--accent); font-size: 1.1rem; font-weight: 600; cursor: pointer; padding: 8px 0; }
+        .fs-btn-text { background: transparent; border: none; color: var(--accent); font-size: 1.15rem; font-weight: 600; cursor: pointer; padding: 8px 0; }
         .fs-btn-text.bold { font-weight: 800; }
+        
         .fs-body { flex: 1; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; padding: 10px 24px 40px; }
         .input-title { width: 100%; background: transparent; border: none; outline: none; font-size: 2.2rem; font-weight: 800; color: var(--text-main); margin-bottom: 24px; }
         .input-title::placeholder { color: var(--text-muted); opacity: 0.6; }
@@ -172,13 +171,13 @@
         .section-label { font-size: 0.85rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin: 24px 0 12px 5px; }
         .chips-scroll { display: flex; overflow-x: auto; gap: 10px; padding-bottom: 10px; scrollbar-width: none; }
         .chips-scroll::-webkit-scrollbar { display: none; }
-        .chip { padding: 14px 22px; border-radius: var(--radius-pill); background: var(--card-bg); font-size: 0.95rem; font-weight: 800; color: var(--text-main); cursor: pointer; transition: 0.2s; white-space: nowrap; border: 2px solid transparent; box-shadow: var(--shadow-soft); display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .chip { padding: 14px 22px; border-radius: var(--radius-pill); background: var(--card-bg); font-size: 0.95rem; font-weight: 800; color: var(--text-main); cursor: pointer; transition: 0.2s; white-space: nowrap; border: 2px solid transparent; box-shadow: var(--shadow-soft); display: flex; align-items: center; justify-content: center; gap: 8px; }
         .chip.active { border-color: var(--text-main); background: var(--text-main); color: var(--bg-color); }
         .color-dot { width: 18px; height: 18px; border-radius: 50%; }
         .btn-delete { width: 100%; padding: 20px; border-radius: var(--radius-pill); border: none; background: rgba(255, 59, 48, 0.1); color: var(--danger); font-size: 1.1rem; font-weight: 800; margin-top: 30px; cursor: pointer; display: none; transition: 0.2s; }
         .btn-delete:active { transform: scale(0.97); }
 
-        /* --- MODAIS MENORES --- */
+        /* --- MODAIS MENORES (Bottom Sheets) --- */
         .modal-bottom { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--overlay); backdrop-filter: blur(8px); display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: 0.4s; z-index: 150; }
         .modal-bottom.open { opacity: 1; pointer-events: auto; }
         .mb-content { background: var(--bg-color); width: 100%; max-width: 500px; border-radius: 40px 40px 0 0; padding: 24px 24px 40px; transform: translateY(100%); transition: 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); max-height: 90vh; overflow-y: auto; box-shadow: 0 -10px 50px rgba(0,0,0,0.15); }
@@ -186,13 +185,13 @@
         .drag-bar { width: 56px; height: 6px; background: var(--text-muted); opacity: 0.3; border-radius: var(--radius-pill); margin: 0 auto 24px; }
 
         .month-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 20px; }
-        .month-btn { background: var(--card-bg); padding: 18px 0; border-radius: 20px; text-align: center; font-weight: 800; font-size: 1rem; color: var(--text-main); cursor: pointer; transition: 0.2s; border: 2px solid transparent; box-shadow: var(--shadow-soft); }
+        .month-btn { background: var(--card-bg); padding: 18px 0; border-radius: 20px; text-align: center; font-weight: 800; font-size: 1.1rem; color: var(--text-main); cursor: pointer; transition: 0.2s; border: 2px solid transparent; box-shadow: var(--shadow-soft); }
         .month-btn:active { transform: scale(0.95); }
         .month-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(0,122,255,0.1); }
-        .year-selector { display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 1.5rem; font-weight: 800; margin-bottom: 20px; }
-        .year-btn { background: var(--card-bg); border: none; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--text-main); box-shadow: var(--shadow-soft); cursor: pointer; }
+        .year-selector { display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 1.6rem; font-weight: 800; margin-bottom: 20px; }
+        .year-btn { background: var(--card-bg); border: none; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--text-main); box-shadow: var(--shadow-soft); cursor: pointer; font-size: 1.2rem; }
 
-        .badge { padding: 6px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 800; margin-top: 6px; display: inline-flex; align-items: center; gap: 4px; transition: 0.3s; cursor: pointer; }
+        .badge { padding: 6px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 800; margin-top: 6px; display: inline-flex; align-items: center; gap: 6px; transition: 0.3s; cursor: pointer; }
 
         #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-20px) scale(0.9); z-index: 300; background: var(--text-main); color: var(--bg-color); padding: 16px 28px; border-radius: var(--radius-pill); font-weight: 800; display: flex; align-items: center; gap: 12px; opacity: 0; transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); box-shadow: var(--shadow-card); white-space: nowrap; }
         .show-t { opacity: 1 !important; transform: translateX(-50%) translateY(0) scale(1) !important; }
@@ -207,12 +206,14 @@
 </head>
 <body>
 
+    <!-- ECRÃ DE LOGIN -->
     <div id="login-screen">
-        <i class="ph-fill ph-lock-key" style="font-size: 4.5rem; color: var(--text-main); margin-bottom: 24px;"></i>
-        <h2 style="margin-bottom: 35px; font-weight: 800; font-size: 2.5rem;">Santuário</h2>
+        <i class="ph-fill ph-lock-key" style="font-size: 4rem; color: var(--text-main); margin-bottom: 24px;"></i>
+        <h2 style="margin-bottom: 35px; font-weight: 800; font-size: 2.2rem;">Santuário</h2>
         <input type="password" id="pass" placeholder="••••••••" autocomplete="off">
     </div>
 
+    <!-- ECRÃ PRINCIPAL DA APP -->
     <div class="app-container" id="app-screen">
         
         <div class="header">
@@ -221,7 +222,7 @@
                 <p id="sub-msg">O teu espaço produtivo.</p>
             </div>
             <div class="header-actions">
-                <button class="icon-btn" onclick="window.openSets()"><i class="ph-bold ph-gear"></i></button>
+                <button class="icon-btn" onclick="window.openModal('sets-modal')"><i class="ph-bold ph-gear"></i></button>
             </div>
         </div>
 
@@ -229,8 +230,8 @@
         <div id="view-metas" class="view-section active">
             <div class="timeline-wrapper">
                 <div class="timeline-header">
-                    <button class="month-picker-btn" onclick="window.openMonthModal()">
-                        <span id="month-year-label">Mês Ano</span> <i class="ph-bold ph-caret-down" style="font-size:1.1rem; color:var(--accent);"></i>
+                    <button class="month-picker-btn" onclick="window.openModal('month-modal')">
+                        <span id="month-year-label">Mês Ano</span> <i class="ph-bold ph-caret-down" style="font-size:1rem; color:var(--accent);"></i>
                     </button>
                     <button onclick="window.scrollToToday()" class="btn-hoje">Hoje</button>
                 </div>
@@ -250,23 +251,23 @@
             <div class="tasks-grid" id="grid"></div>
         </div>
 
-        <!-- SECÇÃO 2: VISÃO GERAL (GRID RESPONSIVO) -->
+        <!-- SECÇÃO 2: VISÃO GERAL (DASHBOARD) -->
         <div id="view-visao" class="view-section">
             <div style="padding: 10px 24px 20px;">
                 <h3 style="font-size: 1.5rem; font-weight: 800; color: var(--text-main); margin-bottom: 5px;">Visão Geral</h3>
-                <p style="color: var(--text-muted); font-weight: 600; font-size: 0.95rem;">O teu histórico completo.</p>
+                <p style="color: var(--text-muted); font-weight: 600; font-size: 0.95rem;">O teu histórico de conquistas.</p>
             </div>
 
             <div class="vision-grid">
-                <div class="vision-group" style="text-align: center;">
+                <div class="vision-group">
                     <h4>Total Alcançado</h4>
                     <div class="big-number" id="global-total">0</div>
-                    <p style="color: var(--text-muted); font-weight: 700; margin-top: 12px;">metas na tua jornada</p>
+                    <p style="color: var(--text-muted); font-weight: 700; margin-top: 12px; text-align: center;">metas na tua jornada</p>
                 </div>
 
                 <div class="vision-group">
                     <h4>Categorias Cumpridas</h4>
-                    <div style="height: 200px; position: relative;">
+                    <div style="height: 220px; position: relative;">
                         <canvas id="globalCatChart"></canvas>
                     </div>
                 </div>
@@ -334,7 +335,7 @@
 
                 <div class="section-label">Categoria</div>
                 <div class="chips-scroll" id="cat-chips">
-                    <div class="chip" onclick="window.openCatModal()" style="background:var(--separator); border-color:transparent;"><i class="ph-bold ph-plus"></i> Nova</div>
+                    <div class="chip" onclick="window.openModal('cat-modal')" style="background:var(--separator); border-color:transparent;"><i class="ph-bold ph-plus"></i> Nova</div>
                 </div>
 
                 <div class="section-label">Anexo (Máx 1MB)</div>
@@ -348,12 +349,12 @@
                     </div>
                 </div>
                 
-                <div class="section-label">Repetição</div>
+                <div class="section-label">Motor de Repetição (Regras)</div>
                 <div class="chips-scroll" id="rep-chips">
-                    <div class="chip active" onclick="window.pickRep('none', this)">Nenhuma</div>
+                    <div class="chip active" onclick="window.pickRep('none', this)">Apenas Hoje</div>
                     <div class="chip" onclick="window.pickRep('daily', this)">Diária</div>
                     <div class="chip" onclick="window.pickRep('monthly', this)">Mensal</div>
-                    <div class="chip" onclick="window.pickRep('custom', this)">Personalizada</div>
+                    <div class="chip" onclick="window.pickRep('custom', this)">Dias de Semana</div>
                 </div>
                 
                 <div id="custom-days-wrap" style="display:none; gap:8px; margin-top:15px; justify-content:space-between;">
@@ -518,6 +519,23 @@
             return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
         }
 
+        // MOTOR DE REGRAS DE REPETIÇÃO
+        function isTaskOnDate(m, targetDateStr) {
+            if (m.date === targetDateStr) return true;
+            if (!m.rep || m.rep === 'none') return false;
+
+            const targetDate = new Date(targetDateStr + 'T00:00:00');
+            const startDate = new Date(m.date + 'T00:00:00');
+
+            if (targetDate < startDate) return false; // Tarefa ainda não começou
+
+            if (m.rep === 'daily') return true;
+            if (m.rep === 'monthly') return targetDate.getDate() === startDate.getDate();
+            if (m.rep === 'custom') return m.customDays && m.customDays.includes(targetDate.getDay().toString());
+
+            return false;
+        }
+
         const init = async () => {
             try {
                 await signInAnonymously(auth);
@@ -571,7 +589,7 @@
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.getElementById(`view-${tab}`).classList.add('active');
 
-            if(tab === 'metas') renderMetas();
+            if(tab === 'metas') { buildTimeline(viewMonthDate); renderMetas(); }
             if(tab === 'visao') renderVisao();
             if(tab === 'notas') renderNotas();
         };
@@ -593,9 +611,15 @@
                 const dStr = `${y}-${String(m+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
                 const dayName = d.toLocaleDateString('pt-PT', {weekday: 'short'}).charAt(0);
                 const div = document.createElement('div'); div.className = 'date-card'; div.id = `date-${dStr}`;
-                const dayMetas = metas.filter(m => m.date === dStr);
+                
+                const dayMetas = metas.filter(mObj => isTaskOnDate(mObj, dStr));
                 const hasTask = dayMetas.length > 0;
-                const allDone = hasTask && dayMetas.every(m => m.done);
+                
+                const allDone = hasTask && dayMetas.every(mObj => {
+                    if (mObj.doneDates && mObj.doneDates.includes(dStr)) return true;
+                    if (mObj.done && (!mObj.doneDates || mObj.doneDates.length === 0)) return true; // Suporte antigo
+                    return false;
+                });
 
                 div.innerHTML = `<span>${dayName}</span><span>${d.getDate()}</span><div class="indicator ${hasTask && !allDone ? 'has-tasks' : ''} ${allDone ? 'all-done' : ''}"></div>`;
                 if(dStr === selectedDate) div.classList.add('active');
@@ -626,7 +650,9 @@
         // --- RENDER METAS ---
         function renderMetas() {
             const grid = document.getElementById('grid'); grid.innerHTML = '';
-            let displayMetas = metas.filter(m => m.date === selectedDate);
+            
+            // Usar o motor de regras
+            let displayMetas = metas.filter(m => isTaskOnDate(m, selectedDate));
             
             const p = selectedDate.split('-');
             const dForm = selectedDate === hojeStr() ? "Hoje" : `${p[2]}/${p[1]}`;
@@ -637,9 +663,20 @@
                 updateDash(0, 0); return;
             }
             
-            displayMetas.sort((a,b) => a.done - b.done).forEach((m, index) => {
+            let concCount = 0;
+
+            // Sort by completion on THIS SPECIFIC DATE
+            displayMetas.sort((a, b) => {
+                const aDone = (a.doneDates && a.doneDates.includes(selectedDate)) || (a.done && (!a.doneDates || a.doneDates.length === 0));
+                const bDone = (b.doneDates && b.doneDates.includes(selectedDate)) || (b.done && (!b.doneDates || b.doneDates.length === 0));
+                return aDone - bDone;
+            }).forEach((m, index) => {
+                
+                const isDone = (m.doneDates && m.doneDates.includes(selectedDate)) || (m.done && (!m.doneDates || m.doneDates.length === 0));
+                if (isDone) concCount++;
+
                 const card = document.createElement('div');
-                card.className = `task-card ${m.done ? 'done' : ''}`;
+                card.className = `task-card ${isDone ? 'done' : ''}`;
                 card.style.animationDelay = `${index * 0.05}s`;
                 const color = m.color || 'var(--text-main)';
                 card.style.borderTopColor = color;
@@ -647,7 +684,7 @@
                 let repIcon = '';
                 if(m.rep === 'daily') repIcon = '<i class="ph-bold ph-arrows-clockwise"></i> Dia';
                 if(m.rep === 'monthly') repIcon = '<i class="ph-bold ph-arrows-clockwise"></i> Mês';
-                if(m.rep === 'custom') repIcon = '<i class="ph-bold ph-arrows-clockwise"></i> Esp.';
+                if(m.rep === 'custom') repIcon = '<i class="ph-bold ph-arrows-clockwise"></i> Regra';
 
                 let fileBadge = '';
                 if(m.file) {
@@ -657,8 +694,8 @@
                 card.innerHTML = `
                     <div class="card-header">
                         <span class="card-cat" style="color:${color}; background:${color}20">${m.cat || 'Geral'}</span>
-                        <div class="check-circle ${m.done ? 'bounce' : ''}" style="${m.done ? `background:${color}; border-color:${color}` : ''}" onclick="window.toggleMeta(${m.id}, event)">
-                            ${m.done ? '<i class="ph-bold ph-check" style="color:white; font-size:1rem;"></i>' : ''}
+                        <div class="check-circle ${isDone ? 'bounce' : ''}" style="${isDone ? `background:${color}; border-color:${color}` : ''}" onclick="window.toggleMeta(${m.id}, event, '${selectedDate}')">
+                            ${isDone ? '<i class="ph-bold ph-check" style="color:white; font-size:1rem;"></i>' : ''}
                         </div>
                     </div>
                     <div class="card-body" onclick="window.openModalMeta(${m.id})">
@@ -671,7 +708,7 @@
                 `;
                 grid.appendChild(card);
             });
-            updateDash(displayMetas.length, displayMetas.filter(m => m.done).length);
+            updateDash(displayMetas.length, concCount);
         }
 
         function updateDash(total, conc) {
@@ -681,31 +718,44 @@
             document.getElementById('prog-ring').style.background = `conic-gradient(var(--text-main) ${pct}%, var(--separator) ${pct}%)`;
         }
 
-        window.toggleMeta = async (id, e) => {
+        window.toggleMeta = async (id, e, targetDateStr) => {
             e.stopPropagation(); const m = metas.find(x => x.id === id); if(!m) return;
-            m.done = !m.done;
-            if(m.done && m.rep && m.rep !== 'none') {
-                let d = m.date ? new Date(m.date + 'T00:00:00') : new Date(); 
-                if(m.rep === 'daily') d.setDate(d.getDate()+1);
-                else if(m.rep === 'monthly') d.setMonth(d.getMonth()+1);
-                else if(m.rep === 'custom' && m.customDays && m.customDays.length > 0) {
-                    d.setDate(d.getDate() + 1);
-                    for(let i=0; i<7; i++) { if(m.customDays.includes(d.getDay().toString())) break; d.setDate(d.getDate() + 1); }
-                } else d.setDate(d.getDate()+1);
-                m.date = d.toISOString().split('T')[0]; m.done = false; toast("Reagendado!", "ph-arrows-clockwise");
+            
+            // Lógica de Conclusão por Data Específica
+            if(!m.doneDates) m.doneDates = [];
+            
+            // Migrar dado legado se existir
+            if(m.done && m.doneDates.length === 0) m.doneDates.push(m.date);
+            
+            if(m.doneDates.includes(targetDateStr)) {
+                m.doneDates = m.doneDates.filter(d => d !== targetDateStr);
+            } else {
+                m.doneDates.push(targetDateStr);
+                toast("Meta Cumprida!", "ph-check-circle");
             }
-            try { await setDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'metas', id.toString()), m); buildTimeline(viewMonthDate); if(currentView==='visao') renderVisao(); } catch(e) {}
+            
+            m.done = m.doneDates.length > 0; // Legacy compat
+
+            try { 
+                await setDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'metas', id.toString()), m); 
+                buildTimeline(viewMonthDate); // Recarrega bolinhas
+                if(currentView==='visao') renderVisao(); 
+            } catch(err) { toast("Erro ao atualizar.", "ph-warning"); }
         }
 
         // --- RENDER VISÃO (DASHBOARD GLOBAL) ---
         function renderVisao() {
-            const completedMetas = metas.filter(m => m.done);
-            document.getElementById('global-total').innerText = completedMetas.length;
+            // Contar total de execuções
+            const totalExecutions = metas.reduce((acc, m) => acc + (m.doneDates ? m.doneDates.length : (m.done ? 1 : 0)), 0);
+            document.getElementById('global-total').innerText = totalExecutions;
 
             let catCounts = {};
-            completedMetas.forEach(m => {
-                let c = m.cat || 'Geral';
-                catCounts[c] = (catCounts[c] || 0) + 1;
+            metas.forEach(m => {
+                let execs = m.doneDates ? m.doneDates.length : (m.done ? 1 : 0);
+                if (execs > 0) {
+                    let c = m.cat || 'Geral';
+                    catCounts[c] = (catCounts[c] || 0) + execs;
+                }
             });
 
             const ctx = document.getElementById('globalCatChart').getContext('2d');
@@ -730,15 +780,33 @@
             upList.innerHTML = '';
             
             const hoje = hojeStr();
-            const upcoming = metas.filter(m => !m.done && m.date > hoje).sort((a,b) => a.date.localeCompare(b.date));
+            let upcomingElements = [];
 
-            if(upcoming.length === 0) {
-                upList.innerHTML = `<div style="text-align:center; padding:30px 0; color:var(--text-muted); font-weight:700;">A agenda está livre!</div>`;
+            // Procurar tarefas nos próximos 15 dias
+            for(let i=1; i<=15; i++) {
+                let d = new Date(); d.setDate(d.getDate() + i);
+                let dStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+                
+                let dayTasks = metas.filter(m => isTaskOnDate(m, dStr));
+                dayTasks.forEach(m => {
+                    // Adicionar apenas se não estiver feita nesse dia
+                    if(!m.doneDates || !m.doneDates.includes(dStr)) {
+                        upcomingElements.push({ date: dStr, meta: m });
+                    }
+                });
+            }
+
+            if(upcomingElements.length === 0) {
+                upList.innerHTML = `<div style="text-align:center; padding:30px 0; color:var(--text-muted); font-weight:700;">A agenda está livre nos próximos dias!</div>`;
                 return;
             }
 
-            upcoming.slice(0, 10).forEach(m => {
-                const dParts = m.date.split('-');
+            // Ordenar e limitar a 10
+            upcomingElements.sort((a,b) => a.date.localeCompare(b.date));
+            const toShow = upcomingElements.slice(0, 10);
+
+            toShow.forEach(item => {
+                const dParts = item.date.split('-');
                 const dObj = new Date(dParts[0], dParts[1]-1, dParts[2]);
                 const dayNum = dParts[2];
                 const monthName = dObj.toLocaleDateString('pt-PT', {month:'short'}).substring(0,3);
@@ -746,7 +814,7 @@
                 const div = document.createElement('div');
                 div.className = 'upcoming-card';
                 div.onclick = () => {
-                    selectedDate = m.date;
+                    selectedDate = item.date;
                     viewMonthDate = new Date(dParts[0], dParts[1]-1, 1);
                     buildTimeline(viewMonthDate);
                     window.switchMainTab('metas');
@@ -758,9 +826,9 @@
                         <span class="month">${monthName}</span>
                     </div>
                     <div class="upcoming-info">
-                        <div class="upcoming-title">${m.title}</div>
+                        <div class="upcoming-title">${item.meta.title}</div>
                         <div style="font-size:0.85rem; color:var(--text-muted); font-weight:700; display:flex; gap:6px;">
-                            ${m.cat ? `<span><i class="ph-fill ph-tag"></i> ${m.cat}</span>` : ''}
+                            ${item.meta.cat ? `<span><i class="ph-fill ph-tag"></i> ${item.meta.cat}</span>` : ''}
                         </div>
                     </div>
                 `;
@@ -772,7 +840,7 @@
         function renderNotas() {
             const grid = document.getElementById('notes-grid'); grid.innerHTML = '';
             if(notas.length === 0) {
-                grid.innerHTML = `<div class="empty-state" style="padding-top:20px; text-align:center; color:var(--text-muted);"><i class="ph-fill ph-notebook" style="font-size:4rem; color:var(--separator)"></i><p style="font-weight:800; font-size:1.2rem; color:var(--text-main); margin-top:10px;">Nenhuma nota.</p><p style="font-size:0.9rem">Guarda as tuas ideias aqui.</p></div>`;
+                grid.innerHTML = `<div class="empty-grid"><i class="ph-fill ph-notebook" style="font-size:4rem; color:var(--separator)"></i><p style="font-weight:800; font-size:1.2rem; color:var(--text-main); margin-top:10px;">Nenhuma nota.</p></div>`;
                 return;
             }
             notas.sort((a,b) => b.id - a.id).forEach((n, index) => {
@@ -854,7 +922,17 @@
             if(!formCat) { toast("Seleciona uma categoria.", "ph-warning"); return; }
             if(formRep === 'custom' && formCustomDays.length === 0) { toast("Seleciona os dias de repetição.", "ph-warning"); return; }
 
-            const data = { id: editMetaId || Date.now(), title: t, date: selectedDate, cat: formCat, rep: formRep, customDays: formCustomDays, color: formColor, done: editMetaId ? metas.find(x => x.id === editMetaId).done : false, file: formMetaFile };
+            const existing = editMetaId ? metas.find(x => x.id === editMetaId) : null;
+
+            const data = { 
+                id: editMetaId || Date.now(), 
+                title: t, 
+                date: existing ? existing.date : selectedDate, // Data de INÍCIO da regra
+                cat: formCat, rep: formRep, customDays: formCustomDays, color: formColor, 
+                doneDates: existing ? (existing.doneDates || []) : [],
+                done: existing ? existing.done : false, 
+                file: formMetaFile 
+            };
             try { await setDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'metas', data.id.toString()), data); window.closeModal('modal-meta'); toast("Meta Guardada!", "ph-check"); buildTimeline(viewMonthDate); if(currentView === 'visao') renderVisao(); } catch (e) { toast("Erro."); }
         };
 
@@ -925,6 +1003,5 @@
     </script>
 </body>
 </html>
-
 
 
