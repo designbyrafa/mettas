@@ -13,317 +13,438 @@
     
     <style>
         :root {
-            --ios-bg: #f5f5f9;
-            --ios-card: #ffffff;
-            --ios-blue: #007aff;
-            --ios-red: #ff3b30;
-            --ios-orange: #ff9500;
-            --ios-yellow: #ffcc00;
-            --ios-green: #34c759;
-            --ios-purple: #af52de;
-            --ios-gray: #8e8e93;
-            --ios-separator: rgba(60, 60, 67, 0.08);
+            --bg-color: #f2f2f7;
+            --card-bg: #ffffff;
             --text-main: #1c1c1e;
             --text-muted: #8e8e93;
-            --shadow-soft: 0 10px 30px rgba(0,0,0,0.04);
-            --shadow-hover: 0 16px 40px rgba(0,0,0,0.08);
-            --modal-overlay: rgba(0, 0, 0, 0.35);
+            --accent: #007aff;
+            --danger: #ff3b30;
+            --separator: rgba(0, 0, 0, 0.05);
+            --shadow-soft: 0 12px 30px rgba(0,0,0,0.04);
+            --shadow-card: 0 16px 40px rgba(0,0,0,0.06);
+            --radius-card: 32px; 
+            --radius-pill: 999px;
+            --overlay: rgba(0, 0, 0, 0.25);
         }
 
         [data-theme="dark"] {
-            --ios-bg: #000000;
-            --ios-card: #1c1c1e;
-            --ios-blue: #0a84ff;
-            --ios-red: #ff453a;
-            --ios-orange: #ff9f0a;
-            --ios-yellow: #ffd60a;
-            --ios-green: #32d74b;
-            --ios-purple: #bf5af2;
-            --ios-gray: #98989d;
-            --ios-separator: rgba(255, 255, 255, 0.12);
+            --bg-color: #000000;
+            --card-bg: #1c1c1e;
             --text-main: #f5f5f7;
-            --text-muted: #ebebf599;
-            --shadow-soft: 0 10px 30px rgba(0,0,0,0.5);
-            --shadow-hover: 0 16px 40px rgba(0,0,0,0.7);
-            --modal-overlay: rgba(0, 0, 0, 0.7);
+            --text-muted: #8e8e93;
+            --accent: #0a84ff;
+            --separator: rgba(255, 255, 255, 0.08);
+            --shadow-soft: 0 12px 30px rgba(0,0,0,0.4);
+            --shadow-card: 0 16px 40px rgba(0,0,0,0.5);
+            --overlay: rgba(0, 0, 0, 0.7);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--ios-bg); color: var(--text-main); min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; transition: background-color 0.4s ease; overflow-x: hidden; }
-        .app-container { width: 100%; max-width: 500px; z-index: 10; padding: 0 20px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; transition: background-color 0.4s; overflow-x: hidden; }
+        .app-container { width: 100%; max-width: 500px; padding-bottom: 140px; }
 
-        /* --- LOGIN SCREEN --- */
-        #login-screen { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; position: fixed; top:0; left:0; width: 100%; background: var(--ios-bg); z-index: 200; transition: opacity 0.5s ease, transform 0.5s ease; }
-        #login-screen input { width: 90%; max-width: 320px; padding: 22px; border-radius: 20px; border: 2px solid transparent; background-color: var(--ios-card); font-size: 1.8rem; color: var(--text-main); outline: none; text-align: center; letter-spacing: 8px; box-shadow: var(--shadow-soft); transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); }
-        #login-screen input:focus { transform: translateY(-4px); box-shadow: var(--shadow-hover); border-color: rgba(0, 122, 255, 0.3); }
+        /* --- LOGIN --- */
+        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: var(--bg-color); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 200; transition: 0.5s; }
+        #login-screen input { width: 90%; max-width: 320px; padding: 24px; border-radius: var(--radius-pill); border: 2px solid transparent; background: var(--card-bg); font-size: 1.8rem; color: var(--text-main); outline: none; text-align: center; letter-spacing: 8px; box-shadow: var(--shadow-soft); transition: 0.3s; }
+        #login-screen input:focus { transform: translateY(-4px); box-shadow: var(--shadow-card); border-color: rgba(0,122,255,0.3); }
 
-        /* --- APP SCREEN --- */
-        #app-screen { display: none; opacity: 0; transform: translateY(15px); transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); padding-top: 110px; padding-bottom: 120px; }
+        /* --- MAIN APP --- */
+        #app-screen { display: none; opacity: 0; transform: translateY(20px); transition: 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); padding-top: 20px; }
         #app-screen.visible { display: block; opacity: 1; transform: translateY(0); }
 
-        /* TOP BAR (Glassmorphism) */
-        .top-bar-wrapper { position: fixed; top: 0; left: 0; width: 100%; display: flex; justify-content: center; z-index: 40; background: rgba(245, 245, 249, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 25px 20px 15px 20px; border-bottom: 1px solid var(--ios-separator); transition: background 0.4s; }
-        [data-theme="dark"] .top-bar-wrapper { background: rgba(0, 0, 0, 0.85); }
-        .header { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 460px; }
-        .header h2 { font-size: 2rem; font-weight: 800; letter-spacing: -0.8px; display: flex; align-items: center; gap: 8px; margin: 0; }
-        .header p { color: var(--text-muted); font-size: 0.9rem; font-weight: 600; margin-top: 2px; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 0 24px 10px; }
+        .header h2 { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.8px; }
         .header-actions { display: flex; gap: 12px; }
+        .icon-btn { background: var(--card-bg); border: none; color: var(--text-main); font-size: 1.3rem; width: 48px; height: 48px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: var(--shadow-soft); transition: 0.2s; }
+        .icon-btn:active { transform: scale(0.9); }
+
+        /* --- BOTTOM NAV --- */
+        .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background: rgba(255,255,255,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); display: flex; justify-content: space-around; padding: 12px 20px; border-radius: var(--radius-pill); box-shadow: var(--shadow-card); z-index: 40; border: 1px solid var(--separator); }
+        [data-theme="dark"] .bottom-nav { background: rgba(28,28,30,0.85); }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-muted); font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: 0.3s; padding: 6px 16px; border-radius: 20px; }
+        .nav-item i { font-size: 1.5rem; transition: 0.3s; }
+        .nav-item.active { color: var(--accent); }
+        .nav-item.active i { transform: translateY(-2px); }
+
+        /* --- VIEWS --- */
+        .view-section { display: none; animation: fadeIn 0.4s; }
+        .view-section.active { display: block; }
+
+        /* --- TIMELINE HORIZONTAL --- */
+        .timeline-wrapper { padding: 10px 0 20px; width: 100%; overflow: hidden; }
+        .timeline-header { padding: 0 24px 10px; display: flex; justify-content: space-between; align-items: center; }
+        .month-picker-btn { font-size: 1.3rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 6px; cursor: pointer; background: transparent; border: none; }
+        .btn-hoje { background: var(--card-bg); border: none; padding: 8px 16px; border-radius: var(--radius-pill); font-weight: 800; font-size: 0.85rem; color: var(--accent); cursor: pointer; box-shadow: var(--shadow-soft); transition: 0.2s; }
+        .btn-hoje:active { transform: scale(0.9); }
         
-        .ios-group { background: var(--ios-card); border-radius: 24px; margin-bottom: 24px; overflow: hidden; box-shadow: var(--shadow-soft); transition: background-color 0.4s ease; }
-        .icon-btn { background: var(--ios-card); border: 1px solid var(--ios-separator); color: var(--ios-blue); font-size: 1.3rem; width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.04); transition: all 0.2s cubic-bezier(0.25, 1.5, 0.5, 1); }
-        .icon-btn:active { transform: scale(0.85); background: var(--ios-separator); }
-
-        /* --- DASHBOARD --- */
-        .dashboard { padding: 24px 20px; }
-        .dash-header { display: flex; justify-content: space-between; margin-bottom: 16px; font-weight: 700; font-size: 1.05rem; color: var(--text-main); }
-        .chart-wrap { height: 110px; }
-
-        /* --- CALENDAR --- */
-        .cal-wrap { max-height: 0; opacity: 0; overflow: hidden; transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1); margin-bottom: 0; border-radius: 24px; }
-        .cal-wrap.open { max-height: 500px; opacity: 1; margin-bottom: 24px; box-shadow: var(--shadow-soft); background: var(--ios-card); }
-        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); padding: 10px 16px 20px; gap: 6px; text-align: center; }
-        .day-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 0.95rem; cursor: pointer; transition: all 0.2s cubic-bezier(0.25, 1.5, 0.5, 1); }
-        .day-cell:active { transform: scale(0.8); }
-        .day-perfect { background: rgba(52, 199, 89, 0.15); color: var(--ios-green); font-weight: 700; }
-        .day-yellow { background: rgba(255, 204, 0, 0.15); color: #d9a000; font-weight: 700; }
-        .day-red { background: rgba(255, 59, 48, 0.15); color: var(--ios-red); font-weight: 700; }
-        .day-today { background: var(--ios-blue); color: white; font-weight: 800; box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3); }
-        .day-selected { box-shadow: 0 0 0 3px var(--ios-card), 0 0 0 5px var(--text-main) !important; z-index: 2; transform: scale(1.1); font-weight: bold; }
-
-        .filter-indicator { display: none; padding: 16px 20px; background: var(--ios-card); border-radius: 20px; margin-bottom: 24px; font-size: 0.95rem; font-weight: 600; color: var(--ios-blue); box-shadow: var(--shadow-soft); justify-content: space-between; align-items: center; animation: slideDown 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); border: 1px solid var(--ios-blue); }
-        .filter-indicator.show { display: flex; }
-
-        /* --- LIST & CARDS --- */
-        ul { list-style: none; display: flex; flex-direction: column; gap: 16px; }
-        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); background: transparent; display: flex; flex-direction: column; align-items: center; gap: 14px; }
-        .empty-state i { font-size: 4.5rem; color: var(--ios-separator); }
+        .timeline-scroll { display: flex; overflow-x: auto; gap: 14px; padding: 5px 24px 20px; scroll-snap-type: x mandatory; scrollbar-width: none; }
+        .timeline-scroll::-webkit-scrollbar { display: none; }
         
-        li { padding: 20px; display: flex; align-items: flex-start; gap: 16px; background: var(--ios-card); border-radius: 24px; box-shadow: var(--shadow-soft); overflow: hidden; position: relative; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.3s ease; opacity: 0; transform: translateY(20px); animation: staggerIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; border: 1px solid transparent; }
-        li:active { transform: scale(0.96); box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
-        li.done { opacity: 0.55; background: var(--ios-bg); box-shadow: none; border-color: var(--ios-separator); }
-        li.done .txt { text-decoration: line-through; color: var(--text-muted) !important; }
+        .date-card { flex: 0 0 70px; height: 95px; background: var(--card-bg); border-radius: 28px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; box-shadow: var(--shadow-soft); scroll-snap-align: center; border: 2px solid transparent; }
+        .date-card span:nth-child(1) { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+        .date-card span:nth-child(2) { font-size: 1.6rem; font-weight: 800; color: var(--text-main); margin-top: 2px; }
+        .date-card .indicator { width: 6px; height: 6px; border-radius: 50%; background: transparent; margin-top: 6px; }
         
-        .color-strip { position: absolute; left: 0; top: 0; bottom: 0; width: 6px; transition: background 0.3s; }
-        .check { width: 30px; height: 30px; border: 2px solid var(--ios-separator); border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.3s cubic-bezier(0.25, 1.5, 0.5, 1); background: var(--ios-card); z-index: 2; }
-        .badge { padding: 6px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 700; margin-top: 10px; display: inline-flex; align-items: center; gap: 6px; transition: all 0.3s; }
+        .date-card.active { background: var(--text-main); border-color: var(--text-main); transform: scale(1.05); box-shadow: var(--shadow-card); }
+        .date-card.active span { color: var(--bg-color) !important; }
+        .has-tasks { background: var(--accent); }
+        .all-done { background: var(--ios-green) !important; }
+
+        /* --- DASHBOARD COMPACTO --- */
+        .compact-dash { margin: 0 24px 24px; padding: 20px 24px; background: var(--card-bg); border-radius: var(--radius-card); box-shadow: var(--shadow-soft); display: flex; align-items: center; justify-content: space-between; }
+        .dash-info h4 { font-size: 1.15rem; font-weight: 800; margin-bottom: 4px; }
+        .dash-info p { font-size: 0.9rem; color: var(--text-muted); font-weight: 600; }
+        .progress-ring { width: 56px; height: 56px; border-radius: 50%; background: conic-gradient(var(--accent) 0%, var(--separator) 0%); display: flex; justify-content: center; align-items: center; position: relative; }
+        .progress-ring::before { content: ''; position: absolute; width: 44px; height: 44px; background: var(--card-bg); border-radius: 50%; }
+        .progress-ring span { position: relative; font-weight: 800; font-size: 0.9rem; color: var(--text-main); }
+
+        /* --- GRID DE METAS --- */
+        .tasks-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; padding: 0 24px; }
+        .task-card { background: var(--card-bg); border-radius: var(--radius-card); padding: 20px; display: flex; flex-direction: column; justify-content: space-between; aspect-ratio: 1 / 1; box-shadow: var(--shadow-soft); position: relative; overflow: hidden; cursor: pointer; transition: 0.3s; animation: staggerIn 0.4s ease forwards; opacity: 0; transform: translateY(20px); }
+        .task-card:active { transform: scale(0.93); }
+        .card-top-strip { position: absolute; top: 0; left: 0; width: 100%; height: 8px; transition: 0.3s; }
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; z-index: 2; }
+        .card-cat { font-size: 0.75rem; font-weight: 800; color: var(--text-muted); background: var(--bg-color); padding: 6px 10px; border-radius: 12px; max-width: 65%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .check-circle { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--separator); display: flex; justify-content: center; align-items: center; transition: 0.3s; background: var(--card-bg); }
+        .card-body { flex: 1; display: flex; align-items: center; z-index: 2; }
+        .card-title { font-size: 1.15rem; font-weight: 800; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .card-footer { display: flex; justify-content: space-between; align-items: flex-end; z-index: 2; margin-top: 8px; flex-wrap: wrap; gap: 4px; }
+        .card-icon { color: var(--text-muted); font-size: 1.1rem; }
+
+        .task-card.done { opacity: 0.6; background: var(--bg-color); box-shadow: none; }
+        .task-card.done .card-title { text-decoration: line-through; color: var(--text-muted); }
+        .empty-grid { grid-column: span 2; text-align: center; padding: 40px 20px; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 10px; }
+
+        /* --- LISTA DE NOTAS --- */
+        .notes-grid { display: flex; flex-direction: column; gap: 16px; padding: 0 24px; }
+        .note-card { background: var(--card-bg); border-radius: var(--radius-card); padding: 24px; box-shadow: var(--shadow-soft); cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; gap: 10px; animation: staggerIn 0.4s ease forwards; opacity: 0; transform: translateY(20px); border-left: 6px solid var(--text-muted); }
+        .note-card:active { transform: scale(0.96); }
+        .note-title { font-size: 1.2rem; font-weight: 800; color: var(--text-main); }
+        .note-preview { font-size: 0.95rem; color: var(--text-muted); font-weight: 500; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4; }
+        .note-date { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-top: 5px; display: flex; align-items: center; gap: 6px; }
+
+        /* --- NOVA VISÃO GERAL (DASHBOARD) --- */
+        .vision-group { margin: 0 24px 24px; padding: 24px; background: var(--card-bg); border-radius: var(--radius-card); box-shadow: var(--shadow-soft); animation: fadeIn 0.5s; }
+        .vision-group h4 { font-size: 1.15rem; font-weight: 800; margin-bottom: 16px; color: var(--text-main); }
+        .big-number { font-size: 4rem; font-weight: 800; color: var(--accent); text-align: center; line-height: 1; margin-top: 10px; }
+        
+        .upcoming-card { background: var(--bg-color); border-radius: 20px; padding: 16px; display: flex; align-items: center; gap: 16px; margin-bottom: 12px; cursor: pointer; transition: 0.3s; }
+        .upcoming-card:active { transform: scale(0.96); }
+        .upcoming-date-box { background: rgba(0,122,255,0.1); color: var(--accent); border-radius: 16px; padding: 10px; text-align: center; min-width: 65px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .upcoming-date-box .day { font-size: 1.4rem; font-weight: 800; line-height: 1; }
+        .upcoming-date-box .month { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; margin-top: 4px; }
+        .upcoming-info { flex: 1; }
+        .upcoming-title { font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
 
         /* --- FLOATING BUTTON --- */
-        .add-btn { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); width: 68px; height: 68px; border-radius: 50%; background: linear-gradient(135deg, #34aadc, var(--ios-blue)); color: white; display: flex; align-items: center; justify-content: center; font-size: 2.4rem; border: none; box-shadow: 0 10px 30px rgba(0, 122, 255, 0.4); cursor: pointer; z-index: 50; transition: all 0.3s cubic-bezier(0.25, 1.5, 0.5, 1); animation: pulse 3s infinite; }
-        .add-btn:active { transform: translateX(-50%) scale(0.85); box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3); animation: none; }
+        .add-btn { position: fixed; bottom: 100px; right: 24px; width: 64px; height: 64px; border-radius: var(--radius-pill); background: var(--text-main); color: var(--bg-color); display: flex; align-items: center; justify-content: center; font-size: 2.2rem; border: none; box-shadow: 0 10px 25px rgba(0,0,0,0.2); cursor: pointer; z-index: 30; transition: 0.3s; }
+        .add-btn:active { transform: scale(0.9) rotate(90deg); }
 
-        /* --- MODALS --- */
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-overlay); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; z-index: 100; }
-        .modal.open { opacity: 1; pointer-events: auto; }
-        .m-content { background: var(--ios-bg); width: 100%; max-width: 500px; border-radius: 32px 32px 0 0; padding: 24px; transform: translateY(100%); transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); max-height: 92vh; overflow-y: auto; box-shadow: 0 -10px 50px rgba(0,0,0,0.15); }
-        .modal.open .m-content { transform: translateY(0); }
-        .modal-drag-handle { width: 48px; height: 6px; background: var(--ios-separator); border-radius: 3px; margin: 0 auto 24px auto; }
-        
-        .f-group { background: var(--ios-card); border-radius: 20px; margin-bottom: 20px; overflow: hidden; padding: 0 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.02); border: 1px solid var(--ios-separator); }
-        .f-row { padding: 18px 0; border-bottom: 1px solid var(--ios-separator); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
-        .f-row:last-child { border-bottom: none; }
-        .f-row input, .f-row select, .f-row textarea { border: none; outline: none; background: transparent; color: var(--text-main); font-size: 1.05rem; width: 100%; font-weight: 600; }
-        .f-row input::placeholder, .f-row textarea::placeholder { color: var(--text-muted); font-weight: 500; }
+        /* --- MODAIS FULL SCREEN --- */
+        .modal-fs { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--bg-color); z-index: 100; transform: translateX(100vw); transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); display: flex; flex-direction: column; }
+        .modal-fs.open { transform: translateX(0); }
+        .fs-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px 10px; background: transparent; }
+        .fs-btn-text { background: transparent; border: none; color: var(--accent); font-size: 1.1rem; font-weight: 600; cursor: pointer; padding: 8px 0; }
+        .fs-btn-text.bold { font-weight: 800; }
+        .fs-body { flex: 1; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; padding: 10px 24px 40px; }
+        .input-title { width: 100%; background: transparent; border: none; outline: none; font-size: 2rem; font-weight: 800; color: var(--text-main); margin-bottom: 24px; }
+        .input-title::placeholder { color: var(--text-muted); opacity: 0.6; }
+        .input-note-body { flex: 1; width: 100%; background: transparent; border: none; outline: none; font-size: 1.1rem; font-weight: 500; color: var(--text-main); line-height: 1.6; resize: none; min-height: 50vh; }
+        .input-note-body::placeholder { color: var(--text-muted); opacity: 0.6; }
 
-        select.native-select { appearance: none; -webkit-appearance: none; border: none; background: transparent; font-size: 1.05rem; color: var(--ios-blue); font-weight: 700; outline: none; cursor: pointer; direction: rtl; }
-        select.native-select option { direction: ltr; color: var(--text-main); }
+        .section-label { font-size: 0.85rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin: 24px 0 12px 5px; }
+        .chips-scroll { display: flex; overflow-x: auto; gap: 10px; padding-bottom: 10px; scrollbar-width: none; }
+        .chips-scroll::-webkit-scrollbar { display: none; }
+        .chip { padding: 14px 22px; border-radius: var(--radius-pill); background: var(--card-bg); font-size: 0.95rem; font-weight: 800; color: var(--text-main); cursor: pointer; transition: 0.2s; white-space: nowrap; border: 2px solid transparent; box-shadow: var(--shadow-soft); display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .chip.active { border-color: var(--text-main); background: var(--text-main); color: var(--bg-color); }
+        .color-dot { width: 18px; height: 18px; border-radius: 50%; }
+        .btn-delete { width: 100%; padding: 20px; border-radius: var(--radius-pill); border: none; background: rgba(255, 59, 48, 0.1); color: var(--danger); font-size: 1.1rem; font-weight: 800; margin-top: 30px; cursor: pointer; display: none; transition: 0.2s; }
+        .btn-delete:active { transform: scale(0.97); }
 
-        .week-wrap { display: none; justify-content: space-between; padding: 16px 0 6px; border-top: 1px solid var(--ios-separator); width: 100%; }
-        .week-day { width: 40px; height: 40px; border-radius: 50%; background: var(--ios-bg); color: var(--text-muted); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.2s cubic-bezier(0.25, 1.5, 0.5, 1); border: 1px solid var(--ios-separator); }
-        .week-day.active { background: var(--ios-blue); color: white; transform: scale(1.1); border-color: var(--ios-blue); box-shadow: 0 4px 10px rgba(0,122,255,0.3); }
+        /* --- MODAIS MENORES --- */
+        .modal-bottom { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--overlay); backdrop-filter: blur(8px); display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: 0.4s; z-index: 150; }
+        .modal-bottom.open { opacity: 1; pointer-events: auto; }
+        .mb-content { background: var(--bg-color); width: 100%; max-width: 500px; border-radius: 40px 40px 0 0; padding: 24px 24px 40px; transform: translateY(100%); transition: 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); max-height: 90vh; overflow-y: auto; box-shadow: 0 -10px 50px rgba(0,0,0,0.15); }
+        .modal-bottom.open .mb-content { transform: translateY(0); }
+        .drag-bar { width: 56px; height: 6px; background: var(--text-muted); opacity: 0.3; border-radius: var(--radius-pill); margin: 0 auto 24px; }
 
-        .color-palette { display: flex; gap: 12px; padding: 12px 0; justify-content: space-between; width: 100%; }
-        .color-swatch { width: 38px; height: 38px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: all 0.2s cubic-bezier(0.25, 1.5, 0.5, 1); }
-        .color-swatch.active { transform: scale(1.15); box-shadow: inset 0 0 0 3px var(--ios-card); border-color: var(--text-main); }
+        .month-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 20px; }
+        .month-btn { background: var(--card-bg); padding: 18px 0; border-radius: 20px; text-align: center; font-weight: 800; font-size: 1rem; color: var(--text-main); cursor: pointer; transition: 0.2s; border: 2px solid transparent; box-shadow: var(--shadow-soft); }
+        .month-btn:active { transform: scale(0.95); }
+        .month-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(0,122,255,0.1); }
+        .year-selector { display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 1.5rem; font-weight: 800; margin-bottom: 20px; }
+        .year-btn { background: var(--card-bg); border: none; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--text-main); box-shadow: var(--shadow-soft); cursor: pointer; }
 
-        /* TOASTS */
-        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-20px) scale(0.95); z-index: 200; background: rgba(30,30,30,0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); color: white; padding: 16px 24px; border-radius: 24px; font-weight: 600; font-size: 0.95rem; display: flex; align-items: center; gap: 12px; opacity: 0; transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        .show-t { opacity: 1 !important; transform: translateX(-50%) translateY(10px) scale(1) !important; }
+        .badge { padding: 6px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 800; margin-top: 6px; display: inline-flex; align-items: center; gap: 4px; transition: 0.3s; }
 
-        /* KEYFRAMES */
+        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-20px) scale(0.9); z-index: 300; background: var(--text-main); color: var(--bg-color); padding: 16px 28px; border-radius: var(--radius-pill); font-weight: 800; display: flex; align-items: center; gap: 12px; opacity: 0; transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); box-shadow: var(--shadow-card); white-space: nowrap; }
+        .show-t { opacity: 1 !important; transform: translateX(-50%) translateY(0) scale(1) !important; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes staggerIn { to { opacity: 1; transform: translateY(0); } }
         @keyframes bounceCheck { 0% { transform: scale(1); } 50% { transform: scale(1.35); } 100% { transform: scale(1); } }
-        .bounce { animation: bounceCheck 0.5s cubic-bezier(0.25, 1.5, 0.5, 1); }
+        .bounce { animation: bounceCheck 0.4s cubic-bezier(0.25, 1.5, 0.5, 1); }
         @keyframes shake { 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
-        .shake { animation: shake 0.4s; border-color: var(--ios-red) !important; color: var(--ios-red) !important; }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(0, 122, 255, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(0, 122, 255, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 122, 255, 0); } }
+        .shake { animation: shake 0.4s; }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
-        <i class="ph-fill ph-lock-key" style="font-size: 3.5rem; color: var(--ios-blue); margin-bottom: 24px;"></i>
-        <h2 style="margin-bottom: 35px; font-weight: 800; font-size: 2rem; letter-spacing: -0.5px;">Santuário</h2>
+        <i class="ph-fill ph-lock-key" style="font-size: 4rem; color: var(--text-main); margin-bottom: 24px;"></i>
+        <h2 style="margin-bottom: 35px; font-weight: 800; font-size: 2.2rem;">Santuário</h2>
         <input type="password" id="pass" placeholder="••••••••" autocomplete="off">
-    </div>
-
-    <!-- Top Bar Sticky -->
-    <div class="top-bar-wrapper" id="top-bar" style="display:none; opacity:0; transition: opacity 0.5s;">
-        <div class="header">
-            <div>
-                <h2>Metas <i class="ph-fill ph-cloud-check" style="font-size: 1.3rem; color: var(--ios-blue)"></i></h2>
-                <p id="sub-msg">A sincronizar com a nuvem...</p>
-            </div>
-            <div class="header-actions">
-                <button class="icon-btn" onclick="window.toggleCal()"><i class="ph-bold ph-calendar-blank"></i></button>
-                <button class="icon-btn" onclick="window.openSets()"><i class="ph-bold ph-gear"></i></button>
-                <button class="icon-btn" onclick="location.reload()"><i class="ph-bold ph-lock-key"></i></button>
-            </div>
-        </div>
     </div>
 
     <div class="app-container" id="app-screen">
         
-        <div class="ios-group dashboard">
-            <div class="dash-header">
-                <span>Balanço Pessoal</span>
-                <span id="dash-count" style="color: var(--ios-blue); font-weight: 800;">0 Concluídas</span>
+        <div class="header">
+            <div>
+                <h2>Santuário</h2>
+                <p id="sub-msg">O teu espaço produtivo.</p>
             </div>
-            <div class="chart-wrap"><canvas id="hChart"></canvas></div>
-        </div>
-
-        <div class="cal-wrap" id="cal-container">
-            <div style="display:flex; justify-content:space-between; padding:20px 24px 10px;">
-                <button onclick="window.changeMonth(-1)" style="background:var(--ios-bg); border:none; width:36px; height:36px; border-radius:50%; font-size:1.2rem; color:var(--ios-blue); cursor:pointer;"><i class="ph-bold ph-caret-left"></i></button>
-                <h3 id="month-display" style="font-size:1.15rem; font-weight:800;">Mês</h3>
-                <button onclick="window.changeMonth(1)" style="background:var(--ios-bg); border:none; width:36px; height:36px; border-radius:50%; font-size:1.2rem; color:var(--ios-blue); cursor:pointer;"><i class="ph-bold ph-caret-right"></i></button>
+            <div class="header-actions">
+                <button class="icon-btn" onclick="window.openSets()"><i class="ph-bold ph-gear"></i></button>
             </div>
-            <div class="cal-grid" id="cal-grid"></div>
         </div>
 
-        <div class="filter-indicator" id="filter-indicator">
-            <span id="filter-text">Exibindo metas do dia</span>
-            <button onclick="window.clearDateFilter()" style="background:var(--ios-bg); padding:8px 16px; border-radius:14px; border:none; color:var(--ios-red); cursor:pointer; font-weight:800;">Remover</button>
+        <!-- SECÇÃO 1: METAS (Ativa por defeito) -->
+        <div id="view-metas" class="view-section active">
+            <div class="timeline-wrapper">
+                <div class="timeline-header">
+                    <button class="month-picker-btn" onclick="window.openMonthModal()">
+                        <span id="month-year-label">Mês Ano</span> <i class="ph-bold ph-caret-down" style="font-size:1rem; color:var(--accent);"></i>
+                    </button>
+                    <button onclick="window.scrollToToday()" class="btn-hoje">Hoje</button>
+                </div>
+                <div class="timeline-scroll" id="timeline"></div>
+            </div>
+
+            <div class="compact-dash">
+                <div class="dash-info">
+                    <h4 id="dash-date-label">Metas de Hoje</h4>
+                    <p id="dash-count">0 concluídas</p>
+                </div>
+                <div class="progress-ring" id="prog-ring">
+                    <span id="prog-pct">0%</span>
+                </div>
+            </div>
+
+            <div class="tasks-grid" id="grid"></div>
         </div>
 
-        <ul id="list"></ul>
+        <!-- SECÇÃO 2: VISÃO GERAL (NOVO DASHBOARD GLOBAL) -->
+        <div id="view-visao" class="view-section">
+            <div style="padding: 10px 24px 20px;">
+                <h3 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main); margin-bottom: 5px;">Visão Geral</h3>
+                <p style="color: var(--text-muted); font-weight: 600; font-size: 0.9rem;">O teu histórico completo.</p>
+            </div>
+
+            <!-- Total Concluído -->
+            <div class="vision-group" style="text-align: center;">
+                <h4>Total Alcançado</h4>
+                <div class="big-number" id="global-total">0</div>
+                <p style="color: var(--text-muted); font-weight: 700; margin-top: 8px;">metas na tua jornada</p>
+            </div>
+
+            <!-- Gráfico de Categorias -->
+            <div class="vision-group">
+                <h4>Categorias Cumpridas</h4>
+                <div style="height: 200px; position: relative;">
+                    <canvas id="globalCatChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Próximos Compromissos -->
+            <div style="padding: 0 24px 20px;">
+                <h4 style="font-size: 1.2rem; font-weight: 800; color: var(--text-main); margin-bottom: 16px;">Próximos Compromissos</h4>
+                <div id="upcoming-list"></div>
+            </div>
+        </div>
+
+        <!-- SECÇÃO 3: NOTAS -->
+        <div id="view-notas" class="view-section">
+            <div style="padding: 10px 24px 20px;">
+                <h3 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main); margin-bottom: 5px;">As Tuas Notas</h3>
+                <p style="color: var(--text-muted); font-weight: 600; font-size: 0.9rem;">Ideias, diários e inspirações.</p>
+            </div>
+            <div class="notes-grid" id="notes-grid"></div>
+        </div>
+
     </div>
 
-    <button class="add-btn" id="add-btn-float" onclick="window.openModal()" style="display:none; opacity:0; transition: opacity 0.5s;">
+    <!-- NAVEGAÇÃO INFERIOR (Atualizada com 3 abas) -->
+    <div class="bottom-nav">
+        <div class="nav-item active" id="tab-metas" onclick="window.switchMainTab('metas')">
+            <i class="ph-fill ph-check-square-offset"></i>
+            <span>Metas</span>
+        </div>
+        <div class="nav-item" id="tab-visao" onclick="window.switchMainTab('visao')">
+            <i class="ph-fill ph-chart-pie-slice"></i>
+            <span>Visão</span>
+        </div>
+        <div class="nav-item" id="tab-notas" onclick="window.switchMainTab('notas')">
+            <i class="ph-fill ph-notebook"></i>
+            <span>Notas</span>
+        </div>
+    </div>
+
+    <button class="add-btn" id="add-btn-float" onclick="window.handleFabClick()">
         <i class="ph-bold ph-plus"></i>
     </button>
 
-    <!-- MODAL PRINCIPAL DE TAREFA -->
-    <div class="modal" id="modal">
-        <div class="m-content">
-            <div class="modal-drag-handle"></div>
-            <div class="header" style="margin-bottom:24px; align-items: center;">
-                <button class="icon-btn" onclick="window.closeModal()" style="background:none; border:none; box-shadow:none; color:var(--text-muted); font-weight:700; width:auto; padding:0 10px;">Cancelar</button>
-                <h3 id="m-title" style="font-weight:800; font-size:1.3rem;">Nova Meta</h3>
-                <button class="icon-btn" onclick="window.saveMeta()" style="background:none; border:none; box-shadow:none; color:var(--ios-blue); font-weight:800; width:auto; padding:0 10px;">Gravar</button>
-            </div>
-            <div class="f-group">
-                <div class="f-row"><input type="text" id="inp-t" placeholder="O que vais conquistar?" style="font-size:1.25rem; font-weight:800; padding:6px 0;"></div>
-                <div class="f-row"><textarea id="inp-d" placeholder="Adiciona notas importantes..." style="height:70px"></textarea></div>
-            </div>
-            <div class="f-group">
-                <div class="f-row" style="border-bottom:none; padding-bottom:0;"><span style="width:100%; font-size:0.9rem; color:var(--text-muted); font-weight:800; text-transform:uppercase; letter-spacing:0.5px;">Cor da Etiqueta</span></div>
-                <div class="f-row" style="padding-top:0;">
-                    <div class="color-palette">
-                        <div class="color-swatch active" style="background: #007aff;" onclick="window.pickColor('#007aff')"></div>
-                        <div class="color-swatch" style="background: #ff3b30;" onclick="window.pickColor('#ff3b30')"></div>
-                        <div class="color-swatch" style="background: #ff9500;" onclick="window.pickColor('#ff9500')"></div>
-                        <div class="color-swatch" style="background: #34c759;" onclick="window.pickColor('#34c759')"></div>
-                        <div class="color-swatch" style="background: #af52de;" onclick="window.pickColor('#af52de')"></div>
-                        <div class="color-swatch" style="background: #8e8e93;" onclick="window.pickColor('#8e8e93')"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="f-group">
-                <div class="f-row"><span style="flex-shrink:0; font-weight:700;">Data</span><input type="date" id="inp-date" style="text-align:right; font-weight:700; color:var(--ios-blue);"></div>
-                
-                <div class="f-row">
-                    <span style="flex-shrink:0; font-weight:700;">Categoria <span style="color:var(--ios-red)">*</span></span>
-                    <div style="display:flex; align-items:center; gap:8px; flex:1; justify-content:flex-end;">
-                        <select id="inp-c" class="native-select" style="flex:1;" required>
-                            <option value="" disabled selected>Selecione...</option>
-                        </select>
-                        <button class="icon-btn" onclick="window.openCatModal()" style="width:34px; height:34px; font-size:1.1rem; box-shadow:none; background:var(--ios-bg); color:var(--ios-blue)"><i class="ph-bold ph-pencil-simple"></i></button>
-                    </div>
-                </div>
-
-                <div class="f-row" style="flex-wrap: wrap;">
-                    <div style="display:flex; justify-content:space-between; width:100%; align-items: center;">
-                        <span style="font-weight:700;">Repetir</span>
-                        <select id="inp-r" class="native-select" onchange="window.checkRep()">
-                            <option value="none">Nunca</option>
-                            <option value="daily">Diariamente</option>
-                            <option value="monthly">Mensalmente</option>
-                            <option value="custom">Dias Específicos</option>
-                        </select>
-                    </div>
-                    <div class="week-wrap" id="week-wrap">
-                        <div class="week-day" id="wd-0" onclick="window.toggleDay(0)">D</div>
-                        <div class="week-day" id="wd-1" onclick="window.toggleDay(1)">S</div>
-                        <div class="week-day" id="wd-2" onclick="window.toggleDay(2)">T</div>
-                        <div class="week-day" id="wd-3" onclick="window.toggleDay(3)">Q</div>
-                        <div class="week-day" id="wd-4" onclick="window.toggleDay(4)">Q</div>
-                        <div class="week-day" id="wd-5" onclick="window.toggleDay(5)">S</div>
-                        <div class="week-day" id="wd-6" onclick="window.toggleDay(6)">S</div>
-                    </div>
-                </div>
-            </div>
-            <button id="btn-del" onclick="window.delMeta()" style="width:100%; padding:18px; color:var(--ios-red); border:none; background:var(--ios-card); border-radius:20px; font-weight:800; font-size:1.15rem; display:none; box-shadow: 0 4px 15px rgba(255, 59, 48, 0.1);">Eliminar Meta</button>
+    <!-- MODAL DE METAS -->
+    <div class="modal-fs" id="modal-meta">
+        <div class="fs-header">
+            <button class="fs-btn-text" onclick="window.closeModal('modal-meta')">Cancelar</button>
+            <h3 class="fs-title" id="m-title">Nova Meta</h3>
+            <button class="fs-btn-text bold" onclick="window.saveMeta()">Gravar</button>
         </div>
-    </div>
+        <div class="fs-body">
+            <input type="text" id="inp-t" class="input-title" placeholder="O que vais conquistar?">
+            
+            <div class="section-label">Etiqueta</div>
+            <div class="chips-scroll" id="color-chips">
+                <div class="chip active" onclick="window.pickColor('#007aff', this)"><div class="color-dot" style="background:#007aff"></div> Azul</div>
+                <div class="chip" onclick="window.pickColor('#ff3b30', this)"><div class="color-dot" style="background:#ff3b30"></div> Vermelho</div>
+                <div class="chip" onclick="window.pickColor('#ff9500', this)"><div class="color-dot" style="background:#ff9500"></div> Laranja</div>
+                <div class="chip" onclick="window.pickColor('#34c759', this)"><div class="color-dot" style="background:#34c759"></div> Verde</div>
+                <div class="chip" onclick="window.pickColor('#af52de', this)"><div class="color-dot" style="background:#af52de"></div> Roxo</div>
+                <div class="chip" onclick="window.pickColor('#8e8e93', this)"><div class="color-dot" style="background:#8e8e93"></div> Cinza</div>
+            </div>
 
-    <!-- MODAL DE CATEGORIAS -->
-    <div class="modal" id="cat-modal" style="z-index: 110;">
-        <div class="m-content">
-            <div class="modal-drag-handle"></div>
-            <div class="header" style="margin-bottom:24px; align-items: center;">
-                <button class="icon-btn" onclick="window.closeCatModal()" style="background:none; border:none; box-shadow:none; color:var(--text-muted); font-weight:700; width:auto; padding:0 10px;"><i class="ph-bold ph-caret-left" style="margin-right:4px;"></i> Voltar</button>
-                <h3 style="font-size:1.2rem; font-weight:800;">Categorias</h3>
-                <div style="width:70px;"></div>
+            <div class="section-label">Categoria</div>
+            <div class="chips-scroll" id="cat-chips">
+                <div class="chip" onclick="window.openCatModal()" style="background:var(--separator); border-color:transparent;"><i class="ph-bold ph-plus"></i> Nova</div>
             </div>
-            <div style="display:flex; gap:12px; margin-bottom:24px;">
-                <input type="text" id="new-cat-name" placeholder="Nova categoria..." style="flex:1; padding:18px 20px; border-radius:18px; border:2px solid transparent; background:var(--ios-card); color:var(--text-main); font-weight:700; font-size:1.05rem; outline:none; box-shadow:var(--shadow-soft);">
-                <button onclick="window.addCat()" style="background:var(--ios-blue); color:white; border:none; border-radius:18px; padding:0 24px; font-weight:800; cursor:pointer; box-shadow:0 4px 15px rgba(0,122,255,0.3); transition: transform 0.2s;"><i class="ph-bold ph-plus" style="font-size:1.3rem;"></i></button>
-            </div>
-            <div class="f-group" style="padding:0; box-shadow:var(--shadow-soft);">
-                <ul id="cat-list" style="margin-bottom:0; background:transparent; min-height:auto; display:block; box-shadow:none; gap:0;">
-                    <!-- Categorias injetadas -->
-                </ul>
-            </div>
-        </div>
-    </div>
 
-    <!-- MODAL DE CONFIGURAÇÕES -->
-    <div class="modal" id="sets-modal">
-        <div class="m-content">
-            <div class="modal-drag-handle"></div>
-            <div class="header" style="margin-bottom: 24px;">
-                <div style="width:40px;"></div>
-                <h3 style="font-size:1.2rem; font-weight:800;">Ajustes</h3>
-                <button onclick="window.closeSets()" class="icon-btn" style="background:var(--ios-bg); color:var(--text-muted);"><i class="ph-bold ph-x"></i></button>
+            <div class="section-label">Anexo (Máx 1MB)</div>
+            <div class="chips-scroll">
+                <input type="file" id="inp-file-meta" style="display:none;" onchange="window.handleFileSelect(event, 'meta')">
+                <div class="chip" onclick="document.getElementById('inp-file-meta').click()" style="background:var(--separator); border-color:transparent;">
+                    <i class="ph-bold ph-paperclip"></i> <span id="meta-file-name">Adicionar Ficheiro</span>
+                </div>
+                <div class="chip" id="meta-file-remove" onclick="window.removeFile('meta')" style="display:none; background:rgba(255,59,48,0.1); color:var(--danger); border-color:transparent;">
+                    <i class="ph-bold ph-x"></i> Remover
+                </div>
             </div>
             
-            <div class="f-group" style="padding: 5px 20px;">
-                <div class="f-row" style="cursor:pointer;" onclick="window.toggleTheme()">
-                    <div style="display:flex; align-items:center; gap:14px; font-weight:700;">
-                        <div style="background:#000; color:white; width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center;"><i class="ph-fill ph-moon"></i></div>
-                        Modo Escuro
-                    </div>
-                    <i class="ph-bold ph-arrows-left-right" style="color:var(--text-muted)"></i>
+            <div class="section-label">Repetição</div>
+            <div class="chips-scroll" id="rep-chips">
+                <div class="chip active" onclick="window.pickRep('none', this)">Nenhuma</div>
+                <div class="chip" onclick="window.pickRep('daily', this)">Diária</div>
+                <div class="chip" onclick="window.pickRep('monthly', this)">Mensal</div>
+                <div class="chip" onclick="window.pickRep('custom', this)">Personalizada</div>
+            </div>
+            
+            <div id="custom-days-wrap" style="display:none; gap:8px; margin-top:15px; justify-content:space-between;">
+                <div class="chip" id="wd-0" onclick="window.toggleDay(0)" style="padding:14px; flex:1; justify-content:center;">D</div>
+                <div class="chip" id="wd-1" onclick="window.toggleDay(1)" style="padding:14px; flex:1; justify-content:center;">S</div>
+                <div class="chip" id="wd-2" onclick="window.toggleDay(2)" style="padding:14px; flex:1; justify-content:center;">T</div>
+                <div class="chip" id="wd-3" onclick="window.toggleDay(3)" style="padding:14px; flex:1; justify-content:center;">Q</div>
+                <div class="chip" id="wd-4" onclick="window.toggleDay(4)" style="padding:14px; flex:1; justify-content:center;">Q</div>
+                <div class="chip" id="wd-5" onclick="window.toggleDay(5)" style="padding:14px; flex:1; justify-content:center;">S</div>
+                <div class="chip" id="wd-6" onclick="window.toggleDay(6)" style="padding:14px; flex:1; justify-content:center;">S</div>
+            </div>
+
+            <button id="btn-del-meta" class="btn-delete" onclick="window.delMeta()"><i class="ph-bold ph-trash" style="margin-right:6px;"></i> Apagar Meta</button>
+        </div>
+    </div>
+
+    <!-- MODAL DE NOTAS -->
+    <div class="modal-fs" id="modal-nota">
+        <div class="fs-header">
+            <button class="fs-btn-text" onclick="window.closeModal('modal-nota')">Sair</button>
+            <h3 class="fs-title" id="n-title-head">Anotação</h3>
+            <button class="fs-btn-text bold" onclick="window.saveNota()">Gravar</button>
+        </div>
+        <div class="fs-body" style="padding-bottom: 20px;">
+            <input type="text" id="inp-nota-t" class="input-title" placeholder="Título da Nota..." style="margin-bottom: 10px;">
+            
+            <div class="chips-scroll" id="nota-color-chips" style="margin-bottom: 20px;">
+                <div class="chip active" onclick="window.pickNotaColor('#8e8e93', this)"><div class="color-dot" style="background:#8e8e93"></div> Padrão</div>
+                <div class="chip" onclick="window.pickNotaColor('#007aff', this)"><div class="color-dot" style="background:#007aff"></div> Ideia</div>
+                <div class="chip" onclick="window.pickNotaColor('#34c759', this)"><div class="color-dot" style="background:#34c759"></div> Diário</div>
+                <div class="chip" onclick="window.pickNotaColor('#ff9500', this)"><div class="color-dot" style="background:#ff9500"></div> Lembrete</div>
+            </div>
+
+            <div class="chips-scroll" style="margin-bottom: 20px;">
+                <input type="file" id="inp-file-nota" style="display:none;" onchange="window.handleFileSelect(event, 'nota')">
+                <div class="chip" onclick="document.getElementById('inp-file-nota').click()" style="background:var(--separator); border-color:transparent;">
+                    <i class="ph-bold ph-paperclip"></i> <span id="nota-file-name">Adicionar Anexo</span>
+                </div>
+                <div class="chip" id="nota-file-remove" onclick="window.removeFile('nota')" style="display:none; background:rgba(255,59,48,0.1); color:var(--danger); border-color:transparent;">
+                    <i class="ph-bold ph-x"></i> Remover
                 </div>
             </div>
 
-            <div class="f-group" style="padding: 5px 20px;">
-                <div class="f-row" style="cursor:pointer;" onclick="window.exportarDados()">
-                    <div style="display:flex; align-items:center; gap:14px; font-weight:700;">
-                        <div style="background:var(--ios-green); color:white; width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center;"><i class="ph-bold ph-download-simple"></i></div>
-                        Exportar Backup
-                    </div>
+            <textarea id="inp-nota-d" class="input-note-body" placeholder="Começa a escrever aqui..."></textarea>
+            
+            <button id="btn-del-nota" class="btn-delete" onclick="window.delNota()"><i class="ph-bold ph-trash" style="margin-right:6px;"></i> Apagar Nota</button>
+        </div>
+    </div>
+
+    <!-- SELETOR DE MÊS -->
+    <div class="modal-bottom" id="month-modal" onclick="if(event.target === this) window.closeModal('month-modal')">
+        <div class="mb-content" style="max-width: 400px; padding-bottom:40px;">
+            <div class="drag-bar"></div>
+            <div class="year-selector">
+                <button class="year-btn" onclick="window.changeModalYear(-1)"><i class="ph-bold ph-caret-left"></i></button>
+                <span id="modal-year-label">2026</span>
+                <button class="year-btn" onclick="window.changeModalYear(1)"><i class="ph-bold ph-caret-right"></i></button>
+            </div>
+            <div class="month-grid">
+                <div class="month-btn" onclick="window.selectMonth(0)">Jan</div>
+                <div class="month-btn" onclick="window.selectMonth(1)">Fev</div>
+                <div class="month-btn" onclick="window.selectMonth(2)">Mar</div>
+                <div class="month-btn" onclick="window.selectMonth(3)">Abr</div>
+                <div class="month-btn" onclick="window.selectMonth(4)">Mai</div>
+                <div class="month-btn" onclick="window.selectMonth(5)">Jun</div>
+                <div class="month-btn" onclick="window.selectMonth(6)">Jul</div>
+                <div class="month-btn" onclick="window.selectMonth(7)">Ago</div>
+                <div class="month-btn" onclick="window.selectMonth(8)">Set</div>
+                <div class="month-btn" onclick="window.selectMonth(9)">Out</div>
+                <div class="month-btn" onclick="window.selectMonth(10)">Nov</div>
+                <div class="month-btn" onclick="window.selectMonth(11)">Dez</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CATEGORIAS -->
+    <div class="modal-bottom" id="cat-modal" style="z-index: 110;" onclick="if(event.target === this) window.closeModal('cat-modal')">
+        <div class="mb-content">
+            <div class="drag-bar"></div>
+            <h3 style="font-size:1.6rem; font-weight:800; margin-bottom:24px;">Categorias</h3>
+            <div style="display:flex; gap:12px; margin-bottom:24px;">
+                <input type="text" id="new-cat-name" placeholder="Nova categoria..." style="flex:1; padding:18px 24px; border-radius:var(--radius-pill); border:none; background:var(--card-bg); font-weight:700; font-size:1.1rem; outline:none; box-shadow:var(--shadow-soft);">
+                <button onclick="window.addCat()" style="background:var(--text-main); color:var(--bg-color); border:none; border-radius:var(--radius-pill); width:60px; font-weight:800; cursor:pointer; box-shadow:var(--shadow-soft);"><i class="ph-bold ph-plus" style="font-size:1.5rem;"></i></button>
+            </div>
+            <div style="background:var(--card-bg); border-radius:24px; padding:12px; box-shadow:var(--shadow-soft);">
+                <ul id="cat-list" style="margin:0; padding:0; display:flex; flex-direction:column; gap:0; box-shadow:none; background:transparent;"></ul>
+            </div>
+            <button onclick="window.closeModal('cat-modal')" style="width:100%; padding:20px; background:var(--separator); border-radius:var(--radius-pill); border:none; color:var(--text-main); font-size:1.1rem; font-weight:800; margin-top:20px; cursor:pointer;">Concluído</button>
+        </div>
+    </div>
+
+    <!-- MODAL AJUSTES -->
+    <div class="modal-bottom" id="sets-modal" onclick="if(event.target === this) window.closeModal('sets-modal')">
+        <div class="mb-content">
+            <div class="drag-bar"></div>
+            <h3 style="font-size:1.6rem; font-weight:800; margin-bottom:24px;">Ajustes</h3>
+            <div style="display:flex; flex-direction:column; gap:16px;">
+                <div class="chip" style="width:100%; justify-content:space-between; padding:20px 24px; font-size:1.1rem; border-radius:24px;" onclick="window.toggleTheme()">
+                    <span style="display:flex; align-items:center; gap:12px;"><i class="ph-bold ph-moon" style="font-size:1.4rem;"></i> Modo Escuro</span>
+                    <i class="ph-bold ph-arrows-left-right"></i>
                 </div>
-                <div class="f-row" style="cursor:pointer; border-bottom:none;" onclick="document.getElementById('import-file').click()">
-                    <div style="display:flex; align-items:center; gap:14px; font-weight:700;">
-                        <div style="background:var(--ios-orange); color:white; width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center;"><i class="ph-bold ph-upload-simple"></i></div>
-                        Importar Backup
-                    </div>
+                <div class="chip" style="width:100%; justify-content:space-between; padding:20px 24px; font-size:1.1rem; border-radius:24px; color:var(--accent);" onclick="window.exportarDados()">
+                    <span style="display:flex; align-items:center; gap:12px;"><i class="ph-bold ph-download-simple" style="font-size:1.4rem;"></i> Exportar Backup</span>
+                </div>
+                <div class="chip" style="width:100%; justify-content:space-between; padding:20px 24px; font-size:1.1rem; border-radius:24px; color:var(--ios-orange);" onclick="document.getElementById('import-file').click()">
+                    <span style="display:flex; align-items:center; gap:12px;"><i class="ph-bold ph-upload-simple" style="font-size:1.4rem;"></i> Importar Backup</span>
                 </div>
                 <input type="file" id="import-file" style="display: none;" accept=".json" onchange="window.importarDados(event)">
             </div>
-            <p style="text-align:center; font-size:0.9rem; color:var(--text-muted); margin-top:24px; font-weight:600;">Os teus dados fluem na Nuvem da Google.</p>
+            <button onclick="window.closeModal('sets-modal')" style="width:100%; padding:20px; background:var(--separator); border-radius:var(--radius-pill); border:none; color:var(--text-main); font-size:1.1rem; font-weight:800; margin-top:20px; cursor:pointer;">Fechar</button>
         </div>
     </div>
 
@@ -334,7 +455,6 @@
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
-        // As tuas credenciais do Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyBOwCPY4pqZTdwE2FonTF_k7mKRod1KIes",
             authDomain: "metas-214f0.firebaseapp.com",
@@ -350,64 +470,71 @@
         const appId = "santuario-v1";
         
         const PASS = "rafa2026";
-        let metas = [];
-        let categorias = []; 
         let user = null;
-        let editId = null;
-        let chart = null;
-        let currentMonth = new Date();
         
-        let filterDate = null; 
-        let selectedColor = "#007aff"; 
-        let customDays = []; 
+        let metas = [];
+        let notas = [];
+        let categorias = []; 
+        
+        let currentView = 'metas'; 
+        let selectedDate = hojeStr(); 
+        let viewMonthDate = new Date(); 
+        let globalChartInst = null;
+        
+        let editMetaId = null;
+        let formColor = "#007aff";
+        let formCat = null;
+        let formRep = "none";
+        let formCustomDays = [];
+        let formMetaFile = null;
 
-        // Login Anónimo
+        let editNotaId = null;
+        let formNotaColor = "#8e8e93";
+        let formNotaFile = null;
+        let modalYear = new Date().getFullYear();
+
+        function hojeStr() {
+            const d = new Date();
+            return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        }
+
         const init = async () => {
             try {
                 await signInAnonymously(auth);
                 onAuthStateChanged(auth, (u) => {
                     user = u;
-                    if(u && document.getElementById('app-screen').classList.contains('visible')) {
-                        syncMetas(); syncCategorias();
-                    }
+                    if(u && document.getElementById('app-screen').classList.contains('visible')) syncAll();
                 });
-            } catch (error) { document.getElementById('sub-msg').innerText = "Erro na nuvem"; }
+            } catch (error) { document.getElementById('sub-msg').innerText = "Offline"; }
         };
         init();
 
-        function syncMetas() {
+        function syncAll() {
             if(!user) return;
-            const ref = collection(db, 'artifacts', appId, 'users', user.uid, 'metas');
-            onSnapshot(ref, (snap) => {
+            onSnapshot(collection(db, 'artifacts', appId, 'users', user.uid, 'metas'), (snap) => {
                 metas = []; snap.forEach(d => metas.push(d.data()));
-                render(); document.getElementById('sub-msg').innerText = "Sincronizado";
+                if(currentView === 'metas') renderMetas();
+                if(currentView === 'visao') renderVisao();
             });
-        }
-
-        function syncCategorias() {
-            if(!user) return;
-            const catRef = collection(db, 'artifacts', appId, 'users', user.uid, 'categorias');
-            onSnapshot(catRef, (snap) => {
+            onSnapshot(collection(db, 'artifacts', appId, 'users', user.uid, 'notas'), (snap) => {
+                notas = []; snap.forEach(d => notas.push(d.data()));
+                if(currentView === 'notas') renderNotas();
+            });
+            onSnapshot(collection(db, 'artifacts', appId, 'users', user.uid, 'categorias'), (snap) => {
                 categorias = []; snap.forEach(d => categorias.push(d.data()));
-                renderCatSelect(); renderCatList();   
+                renderCatChips(); renderCatList();   
             });
         }
 
         document.getElementById('pass').addEventListener('keypress', (e) => {
             if(e.key === 'Enter') {
                 if(e.target.value === PASS) {
-                    document.getElementById('login-screen').style.transform = 'scale(1.1)';
                     document.getElementById('login-screen').style.opacity = '0';
                     setTimeout(() => {
                         document.getElementById('login-screen').style.display = 'none';
-                        document.getElementById('top-bar').style.display = 'flex';
                         document.getElementById('app-screen').classList.add('visible');
-                        setTimeout(() => {
-                            document.getElementById('top-bar').style.opacity = '1';
-                            document.getElementById('add-btn-float').style.display = 'flex';
-                            setTimeout(()=> document.getElementById('add-btn-float').style.opacity = '1', 50);
-                        }, 50);
-                        if(user) { syncMetas(); syncCategorias(); } 
+                        if(user) syncAll();
+                        buildTimeline(viewMonthDate); 
                     }, 400);
                 } else {
                     e.target.classList.add('shake'); setTimeout(() => e.target.classList.remove('shake'), 400); e.target.value = '';
@@ -415,202 +542,359 @@
             }
         });
 
-        function hexToRgba(hex, alpha) {
-            let r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
-            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        // --- NAVEGAÇÃO MAIN ---
+        window.switchMainTab = (tab) => {
+            currentView = tab;
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(`tab-${tab}`).classList.add('active');
+            
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById(`view-${tab}`).classList.add('active');
+
+            if(tab === 'metas') renderMetas();
+            if(tab === 'visao') renderVisao();
+            if(tab === 'notas') renderNotas();
+        };
+
+        window.handleFabClick = () => {
+            // Se estiver na Visão ou Metas, abre a meta. Se nas notas, abre nota.
+            if(currentView === 'notas') window.openModalNota();
+            else window.openModalMeta();
+        };
+
+        // --- TIMELINE ---
+        function buildTimeline(baseDate) {
+            const tl = document.getElementById('timeline'); tl.innerHTML = '';
+            const y = baseDate.getFullYear(); const m = baseDate.getMonth();
+            const daysInMonth = new Date(y, m + 1, 0).getDate();
+            document.getElementById('month-year-label').innerText = baseDate.toLocaleDateString('pt-PT', {month: 'long', year: 'numeric'});
+
+            for(let i = 1; i <= daysInMonth; i++) {
+                const d = new Date(y, m, i);
+                const dStr = `${y}-${String(m+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+                const dayName = d.toLocaleDateString('pt-PT', {weekday: 'short'}).charAt(0);
+                const div = document.createElement('div'); div.className = 'date-card'; div.id = `date-${dStr}`;
+                const dayMetas = metas.filter(m => m.date === dStr);
+                const hasTask = dayMetas.length > 0;
+                const allDone = hasTask && dayMetas.every(m => m.done);
+
+                div.innerHTML = `<span>${dayName}</span><span>${d.getDate()}</span><div class="indicator ${hasTask && !allDone ? 'has-tasks' : ''} ${allDone ? 'all-done' : ''}"></div>`;
+                if(dStr === selectedDate) div.classList.add('active');
+                div.onclick = () => {
+                    document.querySelectorAll('.date-card').forEach(el => el.classList.remove('active'));
+                    div.classList.add('active'); selectedDate = dStr; renderMetas(); scrollToSelected();
+                };
+                tl.appendChild(div);
+            }
+            scrollToSelected();
         }
 
-        function render() {
-            const list = document.getElementById('list');
-            list.innerHTML = '';
-            
-            let displayMetas = metas;
-            if (filterDate) {
-                displayMetas = metas.filter(m => m.date === filterDate);
-                const parts = filterDate.split('-');
-                document.getElementById('filter-text').innerText = `Dia ${parts[2]}/${parts[1]}`;
-                document.getElementById('filter-indicator').classList.add('show');
-            } else {
-                document.getElementById('filter-indicator').classList.remove('show');
-            }
+        window.scrollToToday = () => { selectedDate = hojeStr(); viewMonthDate = new Date(); buildTimeline(viewMonthDate); renderMetas(); };
+        function scrollToSelected() { const el = document.getElementById(`date-${selectedDate}`); const container = document.getElementById('timeline'); if(el && container) container.scrollTo({ left: el.offsetLeft - container.offsetWidth / 2 + el.offsetWidth / 2, behavior: 'smooth' }); }
 
+        window.openMonthModal = () => { modalYear = viewMonthDate.getFullYear(); updateModalYearLabel(); highlightCurrentMonth(); window.openModal('month-modal'); };
+        window.changeModalYear = (delta) => { modalYear += delta; updateModalYearLabel(); highlightCurrentMonth(); };
+        function updateModalYearLabel() { document.getElementById('modal-year-label').innerText = modalYear; }
+        function highlightCurrentMonth() { const btns = document.querySelectorAll('.month-btn'); btns.forEach(b => b.classList.remove('active')); if(modalYear === viewMonthDate.getFullYear()) btns[viewMonthDate.getMonth()].classList.add('active'); }
+        window.selectMonth = (monthIndex) => {
+            viewMonthDate = new Date(modalYear, monthIndex, 1);
+            const hojeData = new Date();
+            if(modalYear === hojeData.getFullYear() && monthIndex === hojeData.getMonth()) selectedDate = hojeStr();
+            else selectedDate = `${modalYear}-${String(monthIndex+1).padStart(2,'0')}-01`;
+            buildTimeline(viewMonthDate); renderMetas(); window.closeModal('month-modal');
+        };
+
+        // --- RENDER METAS ---
+        function renderMetas() {
+            const grid = document.getElementById('grid'); grid.innerHTML = '';
+            let displayMetas = metas.filter(m => m.date === selectedDate);
+            
+            const p = selectedDate.split('-');
+            const dForm = selectedDate === hojeStr() ? "Hoje" : `${p[2]}/${p[1]}`;
+            document.getElementById('dash-date-label').innerText = `Metas de ${dForm}`;
+            
             if(displayMetas.length === 0) {
-                list.innerHTML = `<div class="empty-state"><i class="ph-fill ph-leaf" style="color:var(--ios-green); opacity:0.8"></i><p style="font-weight:700; font-size:1.15rem;">${filterDate ? 'Dia livre!' : 'Pronto para começar?'}</p></div>`;
+                grid.innerHTML = `<div class="empty-grid"><i class="ph-fill ph-check-square-offset" style="font-size:3rem; color:var(--separator)"></i><p style="font-weight:800; font-size:1.1rem; color:var(--text-muted)">Dia limpo.</p></div>`;
+                updateDash(0, 0); return;
             }
             
             displayMetas.sort((a,b) => a.done - b.done).forEach((m, index) => {
-                const li = document.createElement('li');
-                const mColor = m.color || '#007aff';
-                
-                li.style.animationDelay = `${index * 0.05}s`;
-                if(m.done) li.classList.add('done');
-                
-                let badges = '';
-                if(m.date) badges += `<span class="badge" style="background:var(--ios-separator); color:var(--text-muted)"><i class="ph-bold ph-calendar-blank"></i> ${m.date.split('-').reverse().join('/')}</span>`;
-                if(m.cat) badges += `<span class="badge" style="background:${hexToRgba(mColor, 0.15)}; color:${mColor}"><i class="ph-fill ph-tag"></i> ${m.cat}</span>`;
-                if(m.rep && m.rep !== 'none') badges += `<span class="badge" style="background:var(--ios-separator); color:var(--text-muted)"><i class="ph-bold ph-arrows-clockwise"></i></span>`;
+                const card = document.createElement('div'); card.className = `task-card ${m.done ? 'done' : ''}`; card.style.animationDelay = `${index * 0.05}s`;
+                const color = m.color || 'var(--text-main)';
+                let repIcon = '';
+                if(m.rep === 'daily') repIcon = '<i class="ph-bold ph-arrows-clockwise"></i> Dia'; if(m.rep === 'monthly') repIcon = '<i class="ph-bold ph-arrows-clockwise"></i> Mês'; if(m.rep === 'custom') repIcon = '<i class="ph-bold ph-arrows-clockwise"></i> Esp.';
+                let fileBadge = '';
+                if(m.file) fileBadge = `<span class="badge" style="background:var(--separator); color:var(--ios-blue); display:flex;" onclick="window.downloadFile(event, ${m.id}, 'meta')"><i class="ph-bold ph-paperclip"></i> Anexo</span>`;
 
-                li.innerHTML = `
-                    <div class="color-strip" style="background:${mColor}"></div>
-                    <div class="check ${m.done?'bounce':''}" onclick="window.toggle(${m.id}, event)" style="border-color:${mColor}; ${m.done?`background:${mColor}; border-color:${mColor};`:''}">
-                        ${m.done?'<i class="ph-bold ph-check" style="color:white; font-size:1rem;"></i>':''}
+                card.innerHTML = `
+                    <div class="card-top-strip" style="background: ${color}"></div>
+                    <div class="card-header">
+                        <span class="card-cat" style="color:${color}; background:${color}20">${m.cat || 'Geral'}</span>
+                        <div class="check-circle ${m.done ? 'bounce' : ''}" style="${m.done ? `background:${color}; border-color:${color}` : ''}" onclick="window.toggleMeta(${m.id}, event)">
+                            ${m.done ? '<i class="ph-bold ph-check" style="color:white; font-size:1rem;"></i>' : ''}
+                        </div>
                     </div>
-                    <div class="goal-content" onclick="window.openModal(${m.id})">
-                        <div class="txt" style="font-weight:800; color:${!m.done ? mColor : 'var(--text-muted)'}; font-size:1.2rem; letter-spacing:-0.4px;">${m.title}</div>
-                        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;">${badges}</div>
+                    <div class="card-body" onclick="window.openModalMeta(${m.id})">
+                        <span class="card-title">${m.title}</span>
+                    </div>
+                    <div class="card-footer">
+                        ${repIcon ? `<span class="card-icon" style="font-size:0.8rem; font-weight:700; display:flex; align-items:center; gap:4px;">${repIcon}</span>` : '<span></span>'}
+                        ${fileBadge}
                     </div>
                 `;
-                list.appendChild(li);
+                grid.appendChild(card);
             });
-            drawDash(); drawCal();
+            updateDash(displayMetas.length, displayMetas.filter(m => m.done).length);
         }
 
-        async function toggle(id, e) {
+        function updateDash(total, conc) {
+            document.getElementById('dash-count').innerText = `${conc} de ${total} concluídas`;
+            const pct = total === 0 ? 0 : Math.round((conc / total) * 100);
+            document.getElementById('prog-pct').innerText = `${pct}%`;
+            document.getElementById('prog-ring').style.background = `conic-gradient(var(--text-main) ${pct}%, var(--separator) ${pct}%)`;
+        }
+
+        window.toggleMeta = async (id, e) => {
             e.stopPropagation(); const m = metas.find(x => x.id === id); if(!m) return;
             m.done = !m.done;
             if(m.done && m.rep && m.rep !== 'none') {
                 let d = m.date ? new Date(m.date + 'T00:00:00') : new Date(); 
-                if(m.rep === 'daily') { d.setDate(d.getDate()+1); } 
-                else if(m.rep === 'monthly') { d.setMonth(d.getMonth()+1); } 
+                if(m.rep === 'daily') d.setDate(d.getDate()+1);
+                else if(m.rep === 'monthly') d.setMonth(d.getMonth()+1);
                 else if(m.rep === 'custom' && m.customDays && m.customDays.length > 0) {
                     d.setDate(d.getDate() + 1);
                     for(let i=0; i<7; i++) { if(m.customDays.includes(d.getDay().toString())) break; d.setDate(d.getDate() + 1); }
-                } else { d.setDate(d.getDate()+1); }
-                m.date = d.toISOString().split('T')[0]; m.done = false; toast("Reagendado para a próxima data!", "ph-arrows-clockwise");
+                } else d.setDate(d.getDate()+1);
+                m.date = d.toISOString().split('T')[0]; m.done = false; toast("Reagendado!", "ph-arrows-clockwise");
             }
-            try { await setDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'metas', id.toString()), m); } catch(e) { toast("Erro ao atualizar.", "ph-warning"); }
+            try { await setDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'metas', id.toString()), m); buildTimeline(viewMonthDate); if(currentView==='visao') renderVisao(); } catch(e) {}
         }
 
-        function drawDash() {
-            const canvas = document.getElementById('hChart'); if (!canvas) return; 
-            const ctx = canvas.getContext('2d'); let w = 0, p = 0;
-            metas.filter(x => x.done).forEach(x => { const c = (x.cat||'').toLowerCase(); if(c.includes('trab') || c.includes('prof')) w++; else if(c.includes('pess') || c.includes('vida')) p++; });
-            document.getElementById('dash-count').innerText = (w+p) + " Concluídas";
-            if(chart) chart.destroy();
-            chart = new Chart(ctx, { type: 'bar', data: { labels: ['Trabalho', 'Pessoal'], datasets: [{ data: [w, p], backgroundColor: ['#007aff', '#34c759'], borderRadius: 8, borderSkipped: false }] }, options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: { x: { display: false }, y: { grid: { display: false }, border: {display: false}, ticks: { color: '#8e8e93', font: {weight: '700', family: '-apple-system'} } } }, animation: { duration: 1000, easing: 'easeOutExpo' } } });
-        }
+        // --- RENDER VISÃO (DASHBOARD GLOBAL) ---
+        function renderVisao() {
+            const completedMetas = metas.filter(m => m.done);
+            document.getElementById('global-total').innerText = completedMetas.length;
 
-        function drawCal() {
-            const grid = document.getElementById('cal-grid'); grid.innerHTML = '';
-            const y = currentMonth.getFullYear(); const m = currentMonth.getMonth();
-            for(let i=0; i<new Date(y, m, 1).getDay(); i++) grid.appendChild(document.createElement('div'));
-            const days = new Date(y, m+1, 0).getDate(); const todayStr = new Date().toISOString().split('T')[0];
-            for(let i=1; i<=days; i++) {
-                const div = document.createElement('div'); div.className = 'day-cell'; div.innerText = i;
-                const dStr = `${y}-${String(m+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
-                const match = metas.filter(x => x.date === dStr);
-                if(match.length) {
-                    const done = match.filter(x => x.done).length;
-                    if(done === 0) div.classList.add('day-red'); else if(done < match.length) div.classList.add('day-yellow'); else div.classList.add('day-perfect');
-                } else if(dStr === todayStr) { div.classList.add('day-today'); }
-                if(filterDate === dStr) div.classList.add('day-selected');
-                div.onclick = () => { if(filterDate === dStr) filterDate = null; else filterDate = dStr; render(); };
-                grid.appendChild(div);
+            // Gráfico de Categorias Cumpridas
+            let catCounts = {};
+            completedMetas.forEach(m => {
+                let c = m.cat || 'Geral';
+                catCounts[c] = (catCounts[c] || 0) + 1;
+            });
+
+            const ctx = document.getElementById('globalCatChart').getContext('2d');
+            const labels = Object.keys(catCounts);
+            const data = Object.values(catCounts);
+            // Paleta de cores premium
+            const colors = ['#007aff', '#34c759', '#ff9500', '#af52de', '#ff3b30', '#5856d6'];
+
+            if(globalChartInst) globalChartInst.destroy();
+            
+            if(labels.length === 0) {
+                globalChartInst = new Chart(ctx, { type: 'doughnut', data: { labels: ['Sem dados'], datasets: [{ data: [1], backgroundColor: ['var(--separator)'] }] }, options: { maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+            } else {
+                const textColor = document.documentElement.getAttribute('data-theme') === 'dark' ? '#f5f5f7' : '#1c1c1e';
+                globalChartInst = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: { labels: labels, datasets: [{ data: data, backgroundColor: colors, borderWidth: 0, hoverOffset: 4 }] },
+                    options: { maintainAspectRatio: false, cutout: '75%', plugins: { legend: { position: 'right', labels: { color: textColor, font: {family: '-apple-system', weight: '700'} } } } }
+                });
             }
-        }
 
-        // Categorias
-        function renderCatSelect() {
-            const sel = document.getElementById('inp-c'); const val = sel.value; 
-            sel.innerHTML = '<option value="" disabled selected>Selecione...</option>';
-            categorias.forEach(c => { sel.innerHTML += `<option value="${c.name}">${c.name}</option>`; });
-            if(val && categorias.find(c => c.name === val)) { sel.value = val; } 
-            else if (val && val !== '') { sel.innerHTML += `<option value="${val}">${val} (Antiga)</option>`; sel.value = val; }
-        }
+            // Próximos Compromissos
+            const upList = document.getElementById('upcoming-list');
+            upList.innerHTML = '';
+            
+            const hoje = hojeStr();
+            const upcoming = metas.filter(m => !m.done && m.date > hoje).sort((a,b) => a.date.localeCompare(b.date));
 
-        function renderCatList() {
-            const list = document.getElementById('cat-list');
-            if (categorias.length === 0) { list.innerHTML = '<div style="text-align:center; padding:30px 20px; color:var(--text-muted); font-size:1.05rem; font-weight:600;">Nenhuma categoria criada.</div>'; return; }
-            list.innerHTML = '';
-            categorias.forEach(c => {
-                list.innerHTML += `<li style="padding:18px 20px; display:flex; justify-content:space-between; align-items:center; background:var(--ios-bg); margin-bottom:12px; border-radius:20px; border:1px solid var(--ios-separator); box-shadow:none; opacity:1; transform:none; animation:none;"><span style="font-weight:700; font-size:1.1rem;">${c.name}</span><button onclick="window.delCat(${c.id})" style="background:var(--ios-card); border:none; color:var(--ios-red); cursor:pointer; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.05);"><i class="ph-bold ph-trash" style="font-size:1.2rem;"></i></button></li>`;
+            if(upcoming.length === 0) {
+                upList.innerHTML = `<div style="text-align:center; padding:30px 0; color:var(--text-muted); font-weight:700;">A agenda está livre!</div>`;
+                return;
+            }
+
+            // Limitar a mostrar as próximas 10 para não ficar gigante
+            upcoming.slice(0, 10).forEach(m => {
+                const dParts = m.date.split('-');
+                const dObj = new Date(dParts[0], dParts[1]-1, dParts[2]);
+                const dayNum = dParts[2];
+                const monthName = dObj.toLocaleDateString('pt-PT', {month:'short'}).substring(0,3);
+
+                const div = document.createElement('div');
+                div.className = 'upcoming-card';
+                div.onclick = () => {
+                    selectedDate = m.date;
+                    viewMonthDate = new Date(dParts[0], dParts[1]-1, 1);
+                    buildTimeline(viewMonthDate);
+                    window.switchMainTab('metas');
+                };
+
+                div.innerHTML = `
+                    <div class="upcoming-date-box">
+                        <span class="day">${dayNum}</span>
+                        <span class="month">${monthName}</span>
+                    </div>
+                    <div class="upcoming-info">
+                        <div class="upcoming-title">${m.title}</div>
+                        <div style="font-size:0.8rem; color:var(--text-muted); font-weight:700; display:flex; gap:6px;">
+                            ${m.cat ? `<span><i class="ph-fill ph-tag"></i> ${m.cat}</span>` : ''}
+                        </div>
+                    </div>
+                `;
+                upList.appendChild(div);
             });
         }
 
-        window.openCatModal = () => { document.getElementById('cat-modal').classList.add('open'); renderCatList(); };
-        window.closeCatModal = () => document.getElementById('cat-modal').classList.remove('open');
+        // --- RENDER NOTAS ---
+        function renderNotas() {
+            const grid = document.getElementById('notes-grid'); grid.innerHTML = '';
+            if(notas.length === 0) {
+                grid.innerHTML = `<div class="empty-state" style="padding-top:20px; text-align:center; color:var(--text-muted);"><i class="ph-fill ph-notebook" style="font-size:4rem; color:var(--separator)"></i><p style="font-weight:800; font-size:1.2rem; color:var(--text-main); margin-top:10px;">Nenhuma nota.</p><p style="font-size:0.9rem">Guarda as tuas ideias aqui.</p></div>`;
+                return;
+            }
+            notas.sort((a,b) => b.id - a.id).forEach((n, index) => {
+                const card = document.createElement('div'); card.className = 'note-card'; card.style.animationDelay = `${index * 0.05}s`;
+                const nColor = n.color || 'var(--text-muted)'; card.style.borderLeftColor = nColor;
+                const d = new Date(n.id); const dateStr = d.toLocaleDateString('pt-PT', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'});
+                let fileBadge = '';
+                if(n.file) fileBadge = `<div class="badge" style="margin-top: 10px; background:var(--separator); color:var(--ios-blue); display:inline-flex; width:fit-content;" onclick="window.downloadFile(event, ${n.id}, 'nota')"><i class="ph-bold ph-paperclip"></i> ${n.file.name.substring(0,15)}...</div>`;
+
+                card.innerHTML = `<div class="note-title">${n.title || 'Sem Título'}</div><div class="note-preview">${n.content ? n.content.substring(0, 100) : '...'}</div>${fileBadge}<div class="note-date"><i class="ph-bold ph-clock"></i> ${dateStr}</div>`;
+                card.onclick = () => window.openModalNota(n.id);
+                grid.appendChild(card);
+            });
+        }
+
+        // --- SISTEMA DE ANEXOS ---
+        window.handleFileSelect = (e, type) => {
+            const file = e.target.files[0]; if (!file) return;
+            if (file.size > 1024 * 1024) { toast("Ficheiro excede 1MB", "ph-warning"); e.target.value = ''; return; }
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const fileObj = { name: file.name, data: ev.target.result };
+                if (type === 'meta') { formMetaFile = fileObj; document.getElementById('meta-file-name').innerText = file.name.substring(0, 12) + '...'; document.getElementById('meta-file-remove').style.display = 'flex'; } 
+                else { formNotaFile = fileObj; document.getElementById('nota-file-name').innerText = file.name.substring(0, 12) + '...'; document.getElementById('nota-file-remove').style.display = 'flex'; }
+            }; reader.readAsDataURL(file);
+        };
+        window.removeFile = (type) => {
+            if (type === 'meta') { formMetaFile = null; document.getElementById('inp-file-meta').value = ''; document.getElementById('meta-file-name').innerText = 'Adicionar Ficheiro'; document.getElementById('meta-file-remove').style.display = 'none'; } 
+            else { formNotaFile = null; document.getElementById('inp-file-nota').value = ''; document.getElementById('nota-file-name').innerText = 'Adicionar Anexo'; document.getElementById('nota-file-remove').style.display = 'none'; }
+        };
+        window.downloadFile = (e, id, type) => {
+            e.stopPropagation(); const arr = type === 'meta' ? metas : notas; const item = arr.find(x => x.id === id);
+            if (item && item.file) { const a = document.createElement('a'); a.href = item.file.data; a.download = item.file.name; document.body.appendChild(a); a.click(); a.remove(); }
+        };
+
+        window.openModal = (id) => document.getElementById(id).classList.add('open');
+        window.closeModal = (id) => document.getElementById(id).classList.remove('open');
+
+        // --- FORMULÁRIOS METAS ---
+        window.pickColor = (hex, el) => { formColor = hex; document.getElementById('color-chips').querySelectorAll('.chip').forEach(c => c.classList.remove('active')); el.classList.add('active'); };
+        window.pickCat = (catName, el) => { formCat = catName; document.getElementById('cat-chips').querySelectorAll('.chip').forEach(c => c.classList.remove('active')); el.classList.add('active'); };
+        window.pickRep = (repType, el) => { formRep = repType; document.getElementById('rep-chips').querySelectorAll('.chip').forEach(c => c.classList.remove('active')); el.classList.add('active'); document.getElementById('custom-days-wrap').style.display = (repType === 'custom') ? 'flex' : 'none'; };
+        window.toggleDay = (dayStr) => { const el = document.getElementById('wd-'+dayStr); el.classList.toggle('active'); if(el.classList.contains('active')) { if(!formCustomDays.includes(dayStr.toString())) formCustomDays.push(dayStr.toString()); } else { formCustomDays = formCustomDays.filter(d => d !== dayStr.toString()); } };
+
+        function renderCatChips() {
+            const wrap = document.getElementById('cat-chips');
+            wrap.innerHTML = `<div class="chip" onclick="window.openModal('cat-modal')" style="background:var(--separator); border-color:transparent;"><i class="ph-bold ph-plus"></i> Nova</div>`;
+            categorias.forEach(c => { const isActive = formCat === c.name ? 'active' : ''; wrap.innerHTML += `<div class="chip ${isActive}" onclick="window.pickCat('${c.name}', this)">${c.name}</div>`; });
+        }
+
+        window.openModalMeta = (id = null) => {
+            editMetaId = id; const m = metas.find(x => x.id === id);
+            document.getElementById('m-title').innerText = id ? 'Editar Meta' : 'Nova Meta';
+            document.getElementById('inp-t').value = id ? m.title : '';
+            
+            formColor = id && m.color ? m.color : '#007aff';
+            document.getElementById('color-chips').querySelectorAll('.chip').forEach(c => { c.classList.remove('active'); if(c.querySelector('.color-dot').style.backgroundColor === formColor || c.querySelector('.color-dot').style.backgroundColor.replace(/\s/g, '') === formColor) c.classList.add('active'); });
+
+            formCat = id ? m.cat : null; renderCatChips();
+
+            formMetaFile = id && m.file ? m.file : null;
+            if(formMetaFile) { document.getElementById('meta-file-name').innerText = formMetaFile.name.substring(0, 12) + '...'; document.getElementById('meta-file-remove').style.display = 'flex'; } 
+            else { document.getElementById('meta-file-name').innerText = 'Adicionar Ficheiro'; document.getElementById('meta-file-remove').style.display = 'none'; document.getElementById('inp-file-meta').value = ''; }
+
+            formRep = id ? (m.rep || 'none') : 'none';
+            document.getElementById('rep-chips').querySelectorAll('.chip').forEach(c => c.classList.remove('active')); document.querySelector(`#rep-chips .chip[onclick*="'${formRep}'"]`).classList.add('active');
+            
+            formCustomDays = id && m.customDays ? [...m.customDays] : [];
+            document.getElementById('custom-days-wrap').style.display = (formRep === 'custom') ? 'flex' : 'none';
+            for(let i=0; i<7; i++) { const el = document.getElementById('wd-'+i); if(formCustomDays.includes(i.toString())) el.classList.add('active'); else el.classList.remove('active'); }
+
+            document.getElementById('btn-del-meta').style.display = id ? 'block' : 'none';
+            window.openModal('modal-meta');
+        };
+
+        window.saveMeta = async () => {
+            const t = document.getElementById('inp-t').value.trim();
+            if(!t) { toast("Escreve um título.", "ph-warning"); return; }
+            if(!formCat) { toast("Seleciona uma categoria.", "ph-warning"); return; }
+            if(formRep === 'custom' && formCustomDays.length === 0) { toast("Seleciona os dias de repetição.", "ph-warning"); return; }
+
+            const data = { id: editMetaId || Date.now(), title: t, date: selectedDate, cat: formCat, rep: formRep, customDays: formCustomDays, color: formColor, done: editMetaId ? metas.find(x => x.id === editMetaId).done : false, file: formMetaFile };
+            try { await setDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'metas', data.id.toString()), data); window.closeModal('modal-meta'); toast("Meta Guardada!", "ph-check"); buildTimeline(viewMonthDate); if(currentView === 'visao') renderVisao(); } catch (e) { toast("Erro."); }
+        };
+
+        window.delMeta = async () => { if(editMetaId) { try { await deleteDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'metas', editMetaId.toString())); window.closeModal('modal-meta'); toast("Apagada!", "ph-trash"); buildTimeline(viewMonthDate); if(currentView === 'visao') renderVisao(); } catch(e) {} } };
+
+        // --- FORMULÁRIOS NOTAS ---
+        window.pickNotaColor = (hex, el) => { formNotaColor = hex; document.getElementById('nota-color-chips').querySelectorAll('.chip').forEach(c => c.classList.remove('active')); el.classList.add('active'); };
+
+        window.openModalNota = (id = null) => {
+            editNotaId = id; const n = notas.find(x => x.id === id);
+            document.getElementById('n-title-head').innerText = id ? 'Editar Nota' : 'Nova Nota';
+            document.getElementById('inp-nota-t').value = id ? (n.title || '') : '';
+            document.getElementById('inp-nota-d').value = id ? (n.content || '') : '';
+            
+            formNotaColor = id && n.color ? n.color : '#8e8e93';
+            document.getElementById('nota-color-chips').querySelectorAll('.chip').forEach(c => { c.classList.remove('active'); if(c.querySelector('.color-dot').style.backgroundColor === formNotaColor || c.querySelector('.color-dot').style.backgroundColor.replace(/\s/g, '') === formNotaColor) c.classList.add('active'); });
+
+            formNotaFile = id && n.file ? n.file : null;
+            if(formNotaFile) { document.getElementById('nota-file-name').innerText = formNotaFile.name.substring(0, 12) + '...'; document.getElementById('nota-file-remove').style.display = 'flex'; } 
+            else { document.getElementById('nota-file-name').innerText = 'Adicionar Anexo'; document.getElementById('nota-file-remove').style.display = 'none'; document.getElementById('inp-file-nota').value = ''; }
+
+            document.getElementById('btn-del-nota').style.display = id ? 'block' : 'none';
+            window.openModal('modal-nota');
+        };
+
+        window.saveNota = async () => {
+            const t = document.getElementById('inp-nota-t').value.trim(); const d = document.getElementById('inp-nota-d').value.trim();
+            if(!t && !d && !formNotaFile) { toast("A nota está vazia.", "ph-warning"); return; }
+            const data = { id: editNotaId || Date.now(), title: t, content: d, color: formNotaColor, file: formNotaFile };
+            try { await setDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'notas', data.id.toString()), data); window.closeModal('modal-nota'); toast("Nota Guardada!", "ph-check"); } catch (e) {}
+        };
+        window.delNota = async () => { if(editNotaId) { try { await deleteDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'notas', editNotaId.toString())); window.closeModal('modal-nota'); toast("Nota Apagada!", "ph-trash"); } catch(e) {} } };
+
+        // --- CATEGORIAS ---
         window.addCat = async () => {
-            const name = document.getElementById('new-cat-name').value.trim();
-            if(!name) { toast("Escreve um nome.", "ph-warning"); return; }
+            const name = document.getElementById('new-cat-name').value.trim(); if(!name) return;
             if(categorias.find(c => c.name.toLowerCase() === name.toLowerCase())) { toast("Já existe.", "ph-warning"); return; }
             const data = { id: Date.now(), name: name };
-            try { await setDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'categorias', data.id.toString()), data); document.getElementById('new-cat-name').value = ''; toast("Categoria criada!", "ph-check"); } catch(e) {}
+            try { await setDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'categorias', data.id.toString()), data); document.getElementById('new-cat-name').value = ''; toast("Criada!", "ph-check"); } catch(e) {}
         };
         window.delCat = async (id) => { try { await deleteDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'categorias', id.toString())); toast("Apagada.", "ph-trash"); } catch(e) {} };
 
-        // Formulário Meta
-        window.pickColor = (hex) => { selectedColor = hex; document.querySelectorAll('.color-swatch').forEach(e => e.classList.remove('active')); event.target.classList.add('active'); };
-        window.checkRep = () => { const val = document.getElementById('inp-r').value; document.getElementById('week-wrap').style.display = (val === 'custom') ? 'flex' : 'none'; };
-        window.toggleDay = (dayStr) => {
-            const el = document.getElementById('wd-'+dayStr); el.classList.toggle('active');
-            if(el.classList.contains('active')) { if(!customDays.includes(dayStr.toString())) customDays.push(dayStr.toString()); } 
-            else { customDays = customDays.filter(d => d !== dayStr.toString()); }
-        };
-        window.clearDateFilter = () => { filterDate = null; render(); };
-
-        window.openModal = (id = null) => {
-            editId = id; const m = metas.find(x => x.id === id);
-            document.getElementById('m-title').innerText = id ? 'Editar Meta' : 'Nova Meta';
-            document.getElementById('inp-t').value = id ? m.title : '';
-            document.getElementById('inp-d').value = id ? m.desc : '';
-            document.getElementById('inp-date').value = id ? (m.date || filterDate || '') : (filterDate || ''); 
-            document.getElementById('inp-c').value = id ? m.cat : '';
-            document.getElementById('inp-r').value = id ? (m.rep || 'none') : 'none';
-            window.checkRep();
-            customDays = id && m.customDays ? [...m.customDays] : [];
-            for(let i=0; i<7; i++) { const el = document.getElementById('wd-'+i); if(customDays.includes(i.toString())) el.classList.add('active'); else el.classList.remove('active'); }
-            selectedColor = id && m.color ? m.color : '#007aff';
-            document.querySelectorAll('.color-swatch').forEach(e => { e.classList.remove('active'); if(e.style.backgroundColor === selectedColor || e.style.backgroundColor.replace(/\s/g, '') === selectedColor) e.classList.add('active'); });
-            document.getElementById('btn-del').style.display = id ? 'block' : 'none';
-            document.getElementById('modal').classList.add('open');
-        };
-
-        window.closeModal = () => document.getElementById('modal').classList.remove('open');
-        
-        window.saveMeta = async () => {
-            const t = document.getElementById('inp-t').value.trim();
-            if(!t) { toast("O título é obrigatório.", "ph-warning"); return; }
-            
-            const catVal = document.getElementById('inp-c').value;
-            if(!catVal) { toast("Seleciona uma categoria.", "ph-warning-circle"); return; }
-            
-            const rep = document.getElementById('inp-r').value;
-            if(rep === 'custom' && customDays.length === 0) { toast("Selecione os dias.", "ph-warning"); return; }
-
-            const data = {
-                id: editId || Date.now(), title: t, desc: document.getElementById('inp-d').value, date: document.getElementById('inp-date').value, cat: catVal, rep: rep, customDays: customDays, color: selectedColor, done: editId ? metas.find(x => x.id === editId).done : false
-            };
-            try {
-                await setDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'metas', data.id.toString()), data);
-                window.closeModal(); toast("Guardado!", "ph-check-circle");
-            } catch (e) { toast("Erro ao gravar.", "ph-warning"); }
-        };
-
-        window.delMeta = async () => { if(editId) { try { await deleteDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'metas', editId.toString())); window.closeModal(); toast("Apagado!", "ph-trash"); } catch(e) {} } };
-        window.toggleCal = () => document.getElementById('cal-container').classList.toggle('open');
-        window.openSets = () => document.getElementById('sets-modal').classList.add('open');
-        window.closeSets = () => document.getElementById('sets-modal').classList.remove('open');
-        
-        window.changeMonth = (val) => { 
-            currentMonth.setDate(1); // Correção do bug do Calendário
-            currentMonth.setMonth(currentMonth.getMonth() + val); 
-            drawCal(); 
-        };
-
+        // --- SETTINGS ---
+        window.openSets = () => window.openModal('sets-modal');
         window.toggleTheme = () => { const d = document.documentElement; d.getAttribute('data-theme') === 'dark' ? d.removeAttribute('data-theme') : d.setAttribute('data-theme', 'dark'); toast("Tema alterado", "ph-moon"); };
         
-        window.exportarDados = () => { const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(metas)); const a = document.createElement('a'); a.setAttribute("href", dataStr); a.setAttribute("download", "santuario_metas_nuvem.json"); document.body.appendChild(a); a.click(); a.remove(); toast("Backup exportado!", "ph-download-simple"); };
+        window.exportarDados = () => { const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({metas, notas, categorias})); const a = document.createElement('a'); a.setAttribute("href", dataStr); a.setAttribute("download", "santuario_backup.json"); document.body.appendChild(a); a.click(); a.remove(); toast("Exportado!", "ph-download-simple"); };
         window.importarDados = async (event) => {
             const file = event.target.files[0]; if (!file) return; const reader = new FileReader();
-            reader.onload = async function(e) { try { const imp = JSON.parse(e.target.result); if (Array.isArray(imp)) { for(let m of imp) await setDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'metas', m.id.toString()), m); window.closeSets(); toast("Restaurado!", "ph-cloud-check"); } } catch (err) { toast("Erro ao ler.", "ph-warning"); } };
-            reader.readAsText(file); event.target.value = "";
+            reader.onload = async function(e) { 
+                try { 
+                    const imp = JSON.parse(e.target.result); 
+                    if(imp.metas) for(let m of imp.metas) await setDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'metas', m.id.toString()), m); 
+                    if(imp.notas) for(let n of imp.notas) await setDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'notas', n.id.toString()), n); 
+                    if(imp.categorias) for(let c of imp.categorias) await setDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'categorias', c.id.toString()), c); 
+                    window.closeModal('sets-modal'); toast("Restaurado!", "ph-check"); 
+                } catch (err) { toast("Erro ao ler."); } 
+            }; reader.readAsText(file); event.target.value = "";
         };
-
-        window.toggle = toggle; 
 
         function toast(t, icon="ph-info") {
             const el = document.getElementById('toast');
-            el.innerHTML = `<i class="ph-fill ${icon}" style="font-size:1.4rem; color:var(--ios-blue);"></i> ${t}`;
+            el.innerHTML = `<i class="ph-fill ${icon}" style="font-size:1.4rem;"></i> ${t}`;
             el.classList.add('show-t'); setTimeout(() => el.classList.remove('show-t'), 2500);
         }
 
