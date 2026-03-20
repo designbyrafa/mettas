@@ -8,6 +8,11 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.json">
     
+    <!-- Fonte Universal Premium (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
@@ -22,7 +27,7 @@
             --separator: rgba(0, 0, 0, 0.05);
             --shadow-soft: 0 12px 30px rgba(0,0,0,0.04);
             --shadow-card: 0 16px 40px rgba(0,0,0,0.06);
-            --radius-card: 32px; 
+            --radius-card: 28px; 
             --radius-pill: 999px;
             --overlay: rgba(0, 0, 0, 0.25);
         }
@@ -39,7 +44,7 @@
             --overlay: rgba(0, 0, 0, 0.7);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; transition: background-color 0.4s; overflow-x: hidden; }
         .app-container { width: 100%; max-width: 500px; padding-bottom: 140px; }
 
@@ -53,7 +58,7 @@
         #app-screen.visible { display: block; opacity: 1; transform: translateY(0); }
 
         .header { display: flex; justify-content: space-between; align-items: center; padding: 0 24px 10px; }
-        .header h2 { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.8px; }
+        .header h2 { font-size: 2.2rem; font-weight: 800; letter-spacing: -1px; }
         .header-actions { display: flex; gap: 12px; }
         .icon-btn { background: var(--card-bg); border: none; color: var(--text-main); font-size: 1.3rem; width: 48px; height: 48px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: var(--shadow-soft); transition: 0.2s; }
         .icon-btn:active { transform: scale(0.9); }
@@ -77,10 +82,11 @@
         .btn-hoje { background: var(--card-bg); border: none; padding: 8px 16px; border-radius: var(--radius-pill); font-weight: 800; font-size: 0.85rem; color: var(--accent); cursor: pointer; box-shadow: var(--shadow-soft); transition: 0.2s; }
         .btn-hoje:active { transform: scale(0.9); }
         
-        .timeline-scroll { display: flex; overflow-x: auto; gap: 14px; padding: 5px 24px 20px; scroll-snap-type: x mandatory; scrollbar-width: none; }
-        .timeline-scroll::-webkit-scrollbar { display: none; }
+        .timeline-scroll { display: flex; overflow-x: auto; gap: 14px; padding: 10px 24px 20px; scroll-snap-type: x mandatory; scrollbar-width: thin; scrollbar-color: var(--separator) transparent; }
+        .timeline-scroll::-webkit-scrollbar { height: 6px; }
+        .timeline-scroll::-webkit-scrollbar-thumb { background: var(--separator); border-radius: 10px; }
         
-        .date-card { flex: 0 0 70px; height: 95px; background: var(--card-bg); border-radius: 28px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; box-shadow: var(--shadow-soft); scroll-snap-align: center; border: 2px solid transparent; }
+        .date-card { flex: 0 0 70px; height: 95px; background: var(--card-bg); border-radius: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; box-shadow: var(--shadow-soft); scroll-snap-align: center; border: 2px solid transparent; }
         .date-card span:nth-child(1) { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
         .date-card span:nth-child(2) { font-size: 1.6rem; font-weight: 800; color: var(--text-main); margin-top: 2px; }
         .date-card .indicator { width: 6px; height: 6px; border-radius: 50%; background: transparent; margin-top: 6px; }
@@ -99,21 +105,20 @@
         .progress-ring span { position: relative; font-weight: 800; font-size: 0.9rem; color: var(--text-main); }
 
         /* --- GRID DE METAS --- */
-        .tasks-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; padding: 0 24px; }
-        .task-card { background: var(--card-bg); border-radius: var(--radius-card); padding: 20px; display: flex; flex-direction: column; justify-content: space-between; aspect-ratio: 1 / 1; box-shadow: var(--shadow-soft); position: relative; overflow: hidden; cursor: pointer; transition: 0.3s; animation: staggerIn 0.4s ease forwards; opacity: 0; transform: translateY(20px); }
-        .task-card:active { transform: scale(0.93); }
-        .card-top-strip { position: absolute; top: 0; left: 0; width: 100%; height: 8px; transition: 0.3s; }
-        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; z-index: 2; }
+        .tasks-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; padding: 0 24px; }
+        .task-card { background: var(--card-bg); border-radius: var(--radius-card); padding: 20px; display: flex; flex-direction: column; justify-content: space-between; min-height: 180px; height: auto; box-shadow: var(--shadow-soft); position: relative; cursor: pointer; transition: 0.3s; animation: staggerIn 0.4s ease forwards; opacity: 0; transform: translateY(20px); border: 1px solid var(--separator); border-top-width: 8px; /* Borda grossa no topo para cor */ }
+        .task-card:active { transform: scale(0.95); }
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
         .card-cat { font-size: 0.75rem; font-weight: 800; color: var(--text-muted); background: var(--bg-color); padding: 6px 10px; border-radius: 12px; max-width: 65%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .check-circle { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--separator); display: flex; justify-content: center; align-items: center; transition: 0.3s; background: var(--card-bg); }
-        .card-body { flex: 1; display: flex; align-items: center; z-index: 2; }
-        .card-title { font-size: 1.15rem; font-weight: 800; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-        .card-footer { display: flex; justify-content: space-between; align-items: flex-end; z-index: 2; margin-top: 8px; flex-wrap: wrap; gap: 4px; }
+        .card-body { flex: 1; display: flex; align-items: center; padding: 10px 0; }
+        .card-title { font-size: 1.15rem; font-weight: 800; line-height: 1.3; }
+        .card-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; flex-wrap: wrap; gap: 4px; }
         .card-icon { color: var(--text-muted); font-size: 1.1rem; }
 
-        .task-card.done { opacity: 0.6; background: var(--bg-color); box-shadow: none; }
+        .task-card.done { opacity: 0.6; background: var(--bg-color); box-shadow: none; border-top-color: var(--separator) !important; }
         .task-card.done .card-title { text-decoration: line-through; color: var(--text-muted); }
-        .empty-grid { grid-column: span 2; text-align: center; padding: 40px 20px; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .empty-grid { grid-column: 1 / -1; text-align: center; padding: 40px 20px; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 10px; }
 
         /* --- LISTA DE NOTAS --- */
         .notes-grid { display: flex; flex-direction: column; gap: 16px; padding: 0 24px; }
@@ -175,7 +180,7 @@
         .year-selector { display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 1.5rem; font-weight: 800; margin-bottom: 20px; }
         .year-btn { background: var(--card-bg); border: none; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--text-main); box-shadow: var(--shadow-soft); cursor: pointer; }
 
-        .badge { padding: 6px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 800; margin-top: 6px; display: inline-flex; align-items: center; gap: 4px; transition: 0.3s; }
+        .badge { padding: 6px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 800; margin-top: 6px; display: inline-flex; align-items: center; gap: 4px; transition: 0.3s; cursor: pointer; }
 
         #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-20px) scale(0.9); z-index: 300; background: var(--text-main); color: var(--bg-color); padding: 16px 28px; border-radius: var(--radius-pill); font-weight: 800; display: flex; align-items: center; gap: 12px; opacity: 0; transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); box-shadow: var(--shadow-card); white-space: nowrap; }
         .show-t { opacity: 1 !important; transform: translateX(-50%) translateY(0) scale(1) !important; }
@@ -190,12 +195,14 @@
 </head>
 <body>
 
+    <!-- ECRÃ DE LOGIN -->
     <div id="login-screen">
         <i class="ph-fill ph-lock-key" style="font-size: 4rem; color: var(--text-main); margin-bottom: 24px;"></i>
         <h2 style="margin-bottom: 35px; font-weight: 800; font-size: 2.2rem;">Santuário</h2>
         <input type="password" id="pass" placeholder="••••••••" autocomplete="off">
     </div>
 
+    <!-- ECRÃ PRINCIPAL DA APP -->
     <div class="app-container" id="app-screen">
         
         <div class="header">
@@ -210,6 +217,7 @@
 
         <!-- SECÇÃO 1: METAS (Ativa por defeito) -->
         <div id="view-metas" class="view-section active">
+            <!-- Calendário Horizontal -->
             <div class="timeline-wrapper">
                 <div class="timeline-header">
                     <button class="month-picker-btn" onclick="window.openMonthModal()">
@@ -233,21 +241,19 @@
             <div class="tasks-grid" id="grid"></div>
         </div>
 
-        <!-- SECÇÃO 2: VISÃO GERAL (NOVO DASHBOARD GLOBAL) -->
+        <!-- SECÇÃO 2: VISÃO GERAL (DASHBOARD) -->
         <div id="view-visao" class="view-section">
             <div style="padding: 10px 24px 20px;">
                 <h3 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main); margin-bottom: 5px;">Visão Geral</h3>
                 <p style="color: var(--text-muted); font-weight: 600; font-size: 0.9rem;">O teu histórico completo.</p>
             </div>
 
-            <!-- Total Concluído -->
             <div class="vision-group" style="text-align: center;">
                 <h4>Total Alcançado</h4>
                 <div class="big-number" id="global-total">0</div>
                 <p style="color: var(--text-muted); font-weight: 700; margin-top: 8px;">metas na tua jornada</p>
             </div>
 
-            <!-- Gráfico de Categorias -->
             <div class="vision-group">
                 <h4>Categorias Cumpridas</h4>
                 <div style="height: 200px; position: relative;">
@@ -255,7 +261,6 @@
                 </div>
             </div>
 
-            <!-- Próximos Compromissos -->
             <div style="padding: 0 24px 20px;">
                 <h4 style="font-size: 1.2rem; font-weight: 800; color: var(--text-main); margin-bottom: 16px;">Próximos Compromissos</h4>
                 <div id="upcoming-list"></div>
@@ -273,7 +278,7 @@
 
     </div>
 
-    <!-- NAVEGAÇÃO INFERIOR (Atualizada com 3 abas) -->
+    <!-- NAVEGAÇÃO INFERIOR -->
     <div class="bottom-nav">
         <div class="nav-item active" id="tab-metas" onclick="window.switchMainTab('metas')">
             <i class="ph-fill ph-check-square-offset"></i>
@@ -289,17 +294,19 @@
         </div>
     </div>
 
+    <!-- BOTÃO ADICIONAR CONTEXTUAL -->
     <button class="add-btn" id="add-btn-float" onclick="window.handleFabClick()">
         <i class="ph-bold ph-plus"></i>
     </button>
 
-    <!-- MODAL DE METAS -->
+    <!-- MODAL DE METAS (FULL SCREEN) -->
     <div class="modal-fs" id="modal-meta">
         <div class="fs-header">
             <button class="fs-btn-text" onclick="window.closeModal('modal-meta')">Cancelar</button>
             <h3 class="fs-title" id="m-title">Nova Meta</h3>
             <button class="fs-btn-text bold" onclick="window.saveMeta()">Gravar</button>
         </div>
+        
         <div class="fs-body">
             <input type="text" id="inp-t" class="input-title" placeholder="O que vais conquistar?">
             
@@ -351,7 +358,7 @@
         </div>
     </div>
 
-    <!-- MODAL DE NOTAS -->
+    <!-- MODAL DE NOTAS (FULL SCREEN) -->
     <div class="modal-fs" id="modal-nota">
         <div class="fs-header">
             <button class="fs-btn-text" onclick="window.closeModal('modal-nota')">Sair</button>
@@ -384,7 +391,7 @@
         </div>
     </div>
 
-    <!-- SELETOR DE MÊS -->
+    <!-- SELETOR DE MÊS (CLIQUE FORA PARA FECHAR) -->
     <div class="modal-bottom" id="month-modal" onclick="if(event.target === this) window.closeModal('month-modal')">
         <div class="mb-content" style="max-width: 400px; padding-bottom:40px;">
             <div class="drag-bar"></div>
@@ -410,7 +417,7 @@
         </div>
     </div>
 
-    <!-- MODAL CATEGORIAS -->
+    <!-- MODAL CATEGORIAS (CLIQUE FORA PARA FECHAR) -->
     <div class="modal-bottom" id="cat-modal" style="z-index: 110;" onclick="if(event.target === this) window.closeModal('cat-modal')">
         <div class="mb-content">
             <div class="drag-bar"></div>
@@ -426,7 +433,7 @@
         </div>
     </div>
 
-    <!-- MODAL AJUSTES -->
+    <!-- MODAL AJUSTES (CLIQUE FORA PARA FECHAR) -->
     <div class="modal-bottom" id="sets-modal" onclick="if(event.target === this) window.closeModal('sets-modal')">
         <div class="mb-content">
             <div class="drag-bar"></div>
@@ -557,7 +564,6 @@
         };
 
         window.handleFabClick = () => {
-            // Se estiver na Visão ou Metas, abre a meta. Se nas notas, abre nota.
             if(currentView === 'notas') window.openModalNota();
             else window.openModalMeta();
         };
@@ -619,15 +625,24 @@
             }
             
             displayMetas.sort((a,b) => a.done - b.done).forEach((m, index) => {
-                const card = document.createElement('div'); card.className = `task-card ${m.done ? 'done' : ''}`; card.style.animationDelay = `${index * 0.05}s`;
+                const card = document.createElement('div');
+                card.className = `task-card ${m.done ? 'done' : ''}`;
+                card.style.animationDelay = `${index * 0.05}s`;
+                // Solid Top Border directly on the card to fix absolute positioning bugs
                 const color = m.color || 'var(--text-main)';
+                card.style.borderTopColor = color;
+                
                 let repIcon = '';
-                if(m.rep === 'daily') repIcon = '<i class="ph-bold ph-arrows-clockwise"></i> Dia'; if(m.rep === 'monthly') repIcon = '<i class="ph-bold ph-arrows-clockwise"></i> Mês'; if(m.rep === 'custom') repIcon = '<i class="ph-bold ph-arrows-clockwise"></i> Esp.';
+                if(m.rep === 'daily') repIcon = '<i class="ph-bold ph-arrows-clockwise"></i> Dia';
+                if(m.rep === 'monthly') repIcon = '<i class="ph-bold ph-arrows-clockwise"></i> Mês';
+                if(m.rep === 'custom') repIcon = '<i class="ph-bold ph-arrows-clockwise"></i> Esp.';
+
                 let fileBadge = '';
-                if(m.file) fileBadge = `<span class="badge" style="background:var(--separator); color:var(--ios-blue); display:flex;" onclick="window.downloadFile(event, ${m.id}, 'meta')"><i class="ph-bold ph-paperclip"></i> Anexo</span>`;
+                if(m.file) {
+                    fileBadge = `<span class="badge" style="background:var(--separator); color:var(--ios-blue); display:flex;" onclick="window.downloadFile(event, ${m.id}, 'meta')"><i class="ph-bold ph-paperclip"></i> Anexo</span>`;
+                }
 
                 card.innerHTML = `
-                    <div class="card-top-strip" style="background: ${color}"></div>
                     <div class="card-header">
                         <span class="card-cat" style="color:${color}; background:${color}20">${m.cat || 'Geral'}</span>
                         <div class="check-circle ${m.done ? 'bounce' : ''}" style="${m.done ? `background:${color}; border-color:${color}` : ''}" onclick="window.toggleMeta(${m.id}, event)">
@@ -675,7 +690,6 @@
             const completedMetas = metas.filter(m => m.done);
             document.getElementById('global-total').innerText = completedMetas.length;
 
-            // Gráfico de Categorias Cumpridas
             let catCounts = {};
             completedMetas.forEach(m => {
                 let c = m.cat || 'Geral';
@@ -685,7 +699,6 @@
             const ctx = document.getElementById('globalCatChart').getContext('2d');
             const labels = Object.keys(catCounts);
             const data = Object.values(catCounts);
-            // Paleta de cores premium
             const colors = ['#007aff', '#34c759', '#ff9500', '#af52de', '#ff3b30', '#5856d6'];
 
             if(globalChartInst) globalChartInst.destroy();
@@ -697,11 +710,10 @@
                 globalChartInst = new Chart(ctx, {
                     type: 'doughnut',
                     data: { labels: labels, datasets: [{ data: data, backgroundColor: colors, borderWidth: 0, hoverOffset: 4 }] },
-                    options: { maintainAspectRatio: false, cutout: '75%', plugins: { legend: { position: 'right', labels: { color: textColor, font: {family: '-apple-system', weight: '700'} } } } }
+                    options: { maintainAspectRatio: false, cutout: '75%', plugins: { legend: { position: 'right', labels: { color: textColor, font: {family: "'Inter', sans-serif", weight: '700'} } } } }
                 });
             }
 
-            // Próximos Compromissos
             const upList = document.getElementById('upcoming-list');
             upList.innerHTML = '';
             
@@ -713,7 +725,6 @@
                 return;
             }
 
-            // Limitar a mostrar as próximas 10 para não ficar gigante
             upcoming.slice(0, 10).forEach(m => {
                 const dParts = m.date.split('-');
                 const dObj = new Date(dParts[0], dParts[1]-1, dParts[2]);
@@ -902,6 +913,5 @@
     </script>
 </body>
 </html>
-
 
 
